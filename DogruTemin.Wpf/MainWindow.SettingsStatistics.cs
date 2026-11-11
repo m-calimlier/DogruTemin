@@ -1,4 +1,4 @@
-using AppSettings = DogruTemin.Core.Models.ApplicationSettings;
+﻿using AppSettings = DogruTemin.Core.Models.ApplicationSettings;
 using DogruTemin.Core.Services;
 using DogruTemin.Wpf.Models;
 using DogruTemin.Wpf.Services;
@@ -314,7 +314,7 @@ public partial class MainWindow
                 MessageBox.Show("Seçili rapor döneminde Harcama Belgesi tarihi bulunan işlem yok.", "DoğruTemin - Yönetim Raporu", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
-            var dialog = new SaveFileDialog
+            var dialog = new WorkspaceSaveFileDialog
             {
                 Title = "Yönetim Raporunu PDF Olarak Kaydet",
                 Filter = "PDF Dosyası (*.pdf)|*.pdf",
@@ -344,7 +344,7 @@ public partial class MainWindow
                 MessageBox.Show("Seçili rapor döneminde Harcama Belgesi tarihi bulunan işlem yok.", "DoğruTemin - Yönetim Raporu", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
-            var dialog = new SaveFileDialog
+            var dialog = new WorkspaceSaveFileDialog
             {
                 Title = "Yönetim Raporunu Excel Olarak Kaydet",
                 Filter = "Excel Çalışma Kitabı (*.xlsx)|*.xlsx",

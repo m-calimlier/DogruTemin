@@ -1,4 +1,4 @@
-using DogruTemin.Core.Services;
+﻿using DogruTemin.Core.Services;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -156,15 +156,7 @@ public partial class App : Application
         }
         catch
         {
-            path = Path.Combine(Path.GetTempPath(), "DogruTemin_Hata.log");
-            try
-            {
-                var version = AppVersionInfo.InformationalVersion;
-                File.AppendAllText(path,
-                    $"\n===== {DateTime.Now:dd.MM.yyyy HH:mm:ss} =====\nSürüm: {version}\n.NET: {Environment.Version}\n\n{ex}\n",
-                    Encoding.UTF8);
-            }
-            catch { }
+            path = "Masaüstü veri klasörüne hata kaydı yazılamadı.";
         }
         return path;
     }

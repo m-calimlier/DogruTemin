@@ -1,4 +1,4 @@
-using PdfSharp.Drawing;
+﻿using PdfSharp.Drawing;
 using PdfSharp.Pdf;
 using System.IO;
 using System.Windows;
@@ -64,7 +64,7 @@ public static class PdfVectorWriter
 
     public static void Validate(FixedDocument document)
     {
-        var path = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "DogruTemin_Check_" + Guid.NewGuid().ToString("N") + ".pdf");
+        var path = System.IO.Path.Combine(new DogruTemin.Core.Services.StorageService().RootFolder, "Calisma", "DogruTemin_Check_" + Guid.NewGuid().ToString("N") + ".pdf");
         try { Save(document, path); }
         finally { if (File.Exists(path)) File.Delete(path); }
     }

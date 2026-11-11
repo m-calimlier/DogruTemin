@@ -1,4 +1,4 @@
-using DogruTemin.Wpf.Models;
+﻿using DogruTemin.Wpf.Models;
 using ProcurementData = DogruTemin.Core.Models.ProcurementData;
 using ValidationSeverity = DogruTemin.Core.Models.ValidationSeverity;
 using OutputDocumentType = DogruTemin.Core.Models.OutputDocumentType;
@@ -1393,7 +1393,7 @@ public partial class MainWindow : Window
             var document = BuildSelectedOfficialDocumentForExport("PDF kaydetme");
             if (document is null) return;
             Directory.CreateDirectory(_storage.PdfFolder);
-            var dialog = new SaveFileDialog
+            var dialog = new WorkspaceSaveFileDialog
             {
                 Title = "DoğruTemin PDF Kaydet",
                 Filter = "PDF Belgesi (*.pdf)|*.pdf",
@@ -2488,7 +2488,7 @@ public partial class MainWindow : Window
                 return;
             }
 
-            var dialog = new SaveFileDialog
+            var dialog = new WorkspaceSaveFileDialog
             {
                 Title = "Yönetim Raporunu PDF Olarak Kaydet",
                 Filter = "PDF Dosyası (*.pdf)|*.pdf",
@@ -2521,7 +2521,7 @@ public partial class MainWindow : Window
                 return;
             }
 
-            var dialog = new SaveFileDialog
+            var dialog = new WorkspaceSaveFileDialog
             {
                 Title = "Yönetim Raporunu Excel Olarak Kaydet",
                 Filter = "Excel Çalışma Kitabı (*.xlsx)|*.xlsx",
@@ -2765,7 +2765,7 @@ public partial class MainWindow : Window
         if (!PrepareSelectedArchiveAction(row, "Dışa aktarma")) return;
 
         var baseName = row.OperationNumber != "—" ? row.OperationNumber : row.JobTitle;
-        var dialog = new SaveFileDialog
+        var dialog = new WorkspaceSaveFileDialog
         {
             Title = "İşlem Kaydını Dışa Aktar",
             Filter = "DoğruTemin işlem kaydı (*.json)|*.json",
@@ -2798,7 +2798,7 @@ public partial class MainWindow : Window
             }
         }
 
-        var dialog = new SaveFileDialog
+        var dialog = new WorkspaceSaveFileDialog
         {
             Title = "DoğruTemin Arşiv Yedeği",
             Filter = "ZIP arşivi (*.zip)|*.zip",

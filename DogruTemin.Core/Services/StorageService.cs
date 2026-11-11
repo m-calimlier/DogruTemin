@@ -1,4 +1,4 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Globalization;
 using System.Text.Json.Serialization;
 using System.IO.Compression;
@@ -31,26 +31,16 @@ public class StorageService
 
     public StorageService()
     {
-        var desktop = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
-        var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-        var preferred = Path.Combine(desktop, "DoğruTemin");
-        var legacy = Path.Combine(documents, "DoğruTemin");
-        var fallback = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DoğruTemin");
-        var root = preferred;
-
-        try
-        {
-            EnsureRootFolders(root);
-        }
-        catch
-        {
-            root = fallback;
-            EnsureRootFolders(root);
-        }
-
-        InitializePaths(root, legacy);
+        var root = ResolveDesktopRoot(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory));
+        EnsureRootFolders(root);
+        InitializePaths(root, null); // Installer performs verified legacy migration before startup.
     }
 
+    public static string ResolveDesktopRoot(string desktop)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(desktop);
+        return Path.Combine(Path.GetFullPath(desktop), "DoğruTemin");
+    }
     /// <summary>
     /// Testler ve kontrollü veri taşıma senaryoları için açık kök klasör desteği.
     /// Normal uygulama akışı parametresiz kurucuyu kullanır.

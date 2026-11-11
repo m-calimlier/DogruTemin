@@ -1,4 +1,4 @@
-using DogruTemin.Wpf.Models;
+﻿using DogruTemin.Wpf.Models;
 using DogruTemin.Core.Services;
 using DogruTemin.Wpf.Services;
 using Microsoft.Win32;
@@ -258,7 +258,7 @@ public partial class MainWindow
         }
         if (!PrepareSelectedArchiveAction(row, "Dışa aktarma")) return;
         var baseName = row.OperationNumber != "—" ? row.OperationNumber : row.JobTitle;
-        var dialog = new SaveFileDialog
+        var dialog = new WorkspaceSaveFileDialog
         {
             Title = "İşlem Kaydını Dışa Aktar",
             Filter = "DoğruTemin işlem kaydı (*.json)|*.json",
@@ -287,7 +287,7 @@ public partial class MainWindow
                 if (HasUnsavedWork()) return;
             }
         }
-        var dialog = new SaveFileDialog
+        var dialog = new WorkspaceSaveFileDialog
         {
             Title = "DoğruTemin Arşiv Yedeği",
             Filter = "ZIP arşivi (*.zip)|*.zip",

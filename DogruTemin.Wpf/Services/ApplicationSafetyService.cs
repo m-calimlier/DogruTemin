@@ -1,4 +1,4 @@
-using DogruTemin.Wpf;
+﻿using DogruTemin.Wpf;
 using DogruTemin.Core.Services;
 using System.IO;
 using System.IO.Compression;
@@ -147,7 +147,7 @@ public sealed class ApplicationSafetyService
         if (string.IsNullOrWhiteSpace(zipPath) || !File.Exists(zipPath))
             return new RestoreResult(false, "Seçilen yedek dosyası bulunamadı.", null);
 
-        var tempRoot = Path.Combine(Path.GetTempPath(), "DogruTemin_Restore_" + Guid.NewGuid().ToString("N"));
+        var tempRoot = Path.Combine(_storage.RootFolder, "Calisma", "DogruTemin_Restore_" + Guid.NewGuid().ToString("N"));
         var extracted = Path.Combine(tempRoot, "Extracted");
         Directory.CreateDirectory(extracted);
 

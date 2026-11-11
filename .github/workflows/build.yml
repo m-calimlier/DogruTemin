@@ -1,4 +1,4 @@
-name: DogruTemin Windows CI
+﻿name: DogruTemin Windows CI
 
 on:
   push:
@@ -73,9 +73,9 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
-      - name: NSIS kur
+      - name: Inno Setup kur
         shell: pwsh
-        run: choco install nsis -y --no-progress
+        run: choco install innosetup -y --no-progress
       - name: Kurulum paketini üret
         shell: pwsh
         run: |
@@ -84,47 +84,23 @@ jobs:
           $setup = Get-ChildItem $dist -Filter 'DogruTemin_Setup_*_x64.exe' | Select-Object -First 1
           if (-not $setup) { throw 'Setup EXE bulunamadı.' }
           "SETUP_PATH=$($setup.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
-      - name: Temiz kurulum testi
+      # Real install/update/uninstall acceptance now requires a human to accept the
+      # responsibility page. CI must never bypass that consent.
+      - name: Kullanıcı kabulü olmadan kurulum ve veri silme reddedilir
         shell: pwsh
         run: |
-          $process = Start-Process -FilePath $env:SETUP_PATH -ArgumentList '/S' -Wait -PassThru
-          if ($process.ExitCode -ne 0) { throw "Temiz kurulum çıkış kodu: $($process.ExitCode)" }
-          $install = Join-Path $env:ProgramFiles 'DoğruTemin'
-          foreach ($file in 'DogruTemin.exe','Uninstall.exe') {
-            if (-not (Test-Path (Join-Path $install $file))) { throw "Kurulum dosyası eksik: $file" }
-          }
-      - name: Güncelleme ve kullanıcı verisi koruma testi
-        shell: pwsh
-        run: |
-          $install = Join-Path $env:ProgramFiles 'DoğruTemin'
-          $stale = Join-Path $install 'ESKI_SURUM_ARTIGI.tmp'
-          Set-Content $stale 'silinmeli' -Encoding utf8
-
-          $desktop = [Environment]::GetFolderPath([Environment+SpecialFolder]::DesktopDirectory)
-          $data = Join-Path $desktop 'DoğruTemin\Veri'
-          New-Item -ItemType Directory -Force -Path $data | Out-Null
-          $sentinel = Join-Path $data 'CI_SENTINEL.txt'
-          Set-Content $sentinel 'kullanici-verisi-korunmali' -Encoding utf8
-
-          reg add 'HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall\DogruTemin.Desktop.4B5374E9-9DB8-4B4F-93D6-57B0BA5704C4' /v DisplayVersion /t REG_SZ /d 4.1.0 /f | Out-Null
-          $process = Start-Process -FilePath $env:SETUP_PATH -ArgumentList '/S' -Wait -PassThru
-          if ($process.ExitCode -ne 0) { throw "Güncelleme kurulum çıkış kodu: $($process.ExitCode)" }
-          if (Test-Path $stale) { throw 'Eski sürüm artığı güncellemede temizlenmedi.' }
-          if (-not (Test-Path $sentinel)) { throw 'Kullanıcı verisi güncellemede kayboldu.' }
-          if ((Get-Content $sentinel -Raw).Trim() -ne 'kullanici-verisi-korunmali') { throw 'Kullanıcı verisi değiştirildi.' }
-      - name: Kaldırma ve veri koruma testi
-        shell: pwsh
-        run: |
-          $install = Join-Path $env:ProgramFiles 'DoğruTemin'
-          $uninstall = Join-Path $install 'Uninstall.exe'
-          if (-not (Test-Path $uninstall)) { throw 'Uninstall.exe bulunamadı.' }
-          $desktop = [Environment]::GetFolderPath([Environment+SpecialFolder]::DesktopDirectory)
-          $sentinel = Join-Path $desktop 'DoğruTemin\Veri\CI_SENTINEL.txt'
-          $process = Start-Process -FilePath $uninstall -ArgumentList '/S' -Wait -PassThru
-          if ($process.ExitCode -ne 0) { throw "Kaldırma çıkış kodu: $($process.ExitCode)" }
-          Start-Sleep -Seconds 2
-          if (Test-Path (Join-Path $install 'DogruTemin.exe')) { throw 'Program dosyası kaldırılmadı.' }
-          if (-not (Test-Path $sentinel)) { throw 'Kullanıcı verisi kaldırma sırasında silindi.' }
+          $sandbox = Join-Path $env:RUNNER_TEMP 'InstallerConsentCheck'
+          New-Item -ItemType Directory -Force -Path $sandbox | Out-Null
+          $sentinel = Join-Path $sandbox 'USER_DATA.txt'
+          Set-Content -LiteralPath $sentinel 'kullanici-verisi-korunmali' -Encoding utf8
+          $before = (Get-FileHash -LiteralPath $sentinel).Hash
+          $log = Join-Path $sandbox 'setup.log'
+          $args = @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', ('/DIR="' + (Join-Path $sandbox 'app') + '"'), ('/LOG="' + $log + '"'))
+          $process = Start-Process -FilePath $env:SETUP_PATH -ArgumentList $args -WindowStyle Hidden -Wait -PassThru
+          if ($process.ExitCode -eq 0) { throw 'Kurulum kullanıcı kabulünü atladı.' }
+          if ((Get-Content -LiteralPath $log -Raw) -notmatch 'InitializeSetup returned False') { throw 'Kurulum beklenen onay kapısında durmadı.' }
+          if ((Get-FileHash -LiteralPath $sentinel).Hash -ne $before) { throw 'Kullanıcı verisi değiştirildi.' }
+          if (Test-Path -LiteralPath (Join-Path $sandbox 'app')) { throw 'Onaysız program kurulumu yapıldı.' }
       - name: Setup ve SHA-256 paketini sakla
         if: success()
         uses: actions/upload-artifact@v4

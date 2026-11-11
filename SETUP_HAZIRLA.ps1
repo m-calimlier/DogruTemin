@@ -1,4 +1,5 @@
-param(
+﻿param(
+    [string]$CompilerPath = '',
     [switch]$AllowPrerelease,
     [switch]$AllowUnsignedFinal,
     [string]$OutputRoot = '',
@@ -61,19 +62,15 @@ $dotnet = Get-Command dotnet -ErrorAction SilentlyContinue
 if (-not $dotnet) { Fail '.NET SDK bulunamadı.' }
 if ([int]((& dotnet --version).Split('.')[0]) -lt 8) { Fail '.NET 8 veya daha yeni SDK gerekir.' }
 
-$makensis = @(
-    "${env:ProgramFiles(x86)}\NSIS\makensis.exe",
-    "$env:ProgramFiles\NSIS\makensis.exe",
-    "$env:LOCALAPPDATA\Programs\NSIS\makensis.exe"
-) | Where-Object { $_ -and (Test-Path $_) } | Select-Object -First 1
-if (-not $makensis) { $cmd = Get-Command makensis.exe -ErrorAction SilentlyContinue; if ($cmd) { $makensis = $cmd.Source } }
-if (-not $makensis) { Fail 'NSIS makensis.exe bulunamadı.' }
-
+if (!$CompilerPath) {
+    $CompilerPath = @("${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe", "$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe") | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1
+}
+if (!$CompilerPath) { Fail 'Inno Setup 6.6+ gerekli; -CompilerPath ile ISCC.exe konumunu belirtin.' }
 $publish = Join-Path $PSScriptRoot '_YAYIN'
 $appOut = Join-Path $publish 'Uygulama'
 $setupOut = Join-Path $publish 'Setup'
 $dist = if ([string]::IsNullOrWhiteSpace($OutputRoot)) { Join-Path $PSScriptRoot 'DAGITIM' } else { [IO.Path]::GetFullPath($OutputRoot) }
-if (Test-Path $publish) { Remove-Item $publish -Recurse -Force }
+if (Test-Path $publish) { Fail 'Eski _YAYIN klasörü mevcut; önce içeriğini kontrol edin.' }
 New-Item -ItemType Directory -Force -Path $appOut,$setupOut,$dist | Out-Null
 
 Write-Host 'Kalite kapısı: restore + Release build + otomatik testler' -ForegroundColor Cyan
@@ -101,23 +98,11 @@ if ([string]::IsNullOrWhiteSpace($CertificateThumbprint)) {
     Sign-File (Join-Path $appOut 'DogruTemin.exe')
 }
 
-$template = Join-Path $PSScriptRoot 'Kurulum\DogruTemin_NSIS.nsi'
-$nsi = Get-Content $template -Raw -Encoding UTF8
-$nsi = $nsi.Replace('!define APPVERSION "4.2.0"', "!define APPVERSION `"$version`"")
-$nsi = $nsi.Replace('OutFile "..\_YAYIN\Setup\DogruTemin_Setup_4.2.0_x64.exe"', "OutFile `"..\_YAYIN\Setup\DogruTemin_Setup_${packageVersion}_x64.exe`"")
-$nsi = $nsi.Replace('VIProductVersion "4.2.0.0"', "VIProductVersion `"$assemblyVersion`"")
-$nsi = $nsi.Replace('VIAddVersionKey /LANG=1055 "FileVersion" "4.2.0.0"', "VIAddVersionKey /LANG=1055 `"FileVersion`" `"$assemblyVersion`"")
-$nsi = $nsi.Replace('VIAddVersionKey /LANG=1055 "ProductVersion" "4.2.0"', "VIAddVersionKey /LANG=1055 `"ProductVersion`" `"$packageVersion`"")
-$tempNsi = Join-Path $publish 'DogruTemin_NSIS.generated.nsi'
-[IO.File]::WriteAllText($tempNsi, $nsi, (New-Object System.Text.UTF8Encoding($true)))
-
-& $makensis /V4 $tempNsi
-if ($LASTEXITCODE -ne 0) { Fail 'NSIS Setup oluşturamadı.' }
+& $CompilerPath "/DAppVersion=$version" "/DPayloadDir=$appOut" "/O$setupOut" "/FDogruTemin_Setup_${packageVersion}_x64" (Join-Path $PSScriptRoot 'installer/DogruTemin.iss')
+if ($LASTEXITCODE -ne 0) { Fail 'Inno Setup oluşturulamadı.' }
 $setupExe = Join-Path $setupOut "DogruTemin_Setup_${packageVersion}_x64.exe"
-if (-not (Test-Path $setupExe)) { Fail 'Setup EXE oluşmadı.' }
-if ((Get-Item $setupExe).Length -lt 10000000) { Fail 'Setup beklenenden küçük.' }
-if (-not [string]::IsNullOrWhiteSpace($CertificateThumbprint)) { Sign-File $setupExe }
-
+if (!(Test-Path -LiteralPath $setupExe)) { Fail 'Setup EXE oluşmadı.' }
+if (![string]::IsNullOrWhiteSpace($CertificateThumbprint)) { Sign-File $setupExe }
 $finalExe = Join-Path $dist "DogruTemin_Setup_${packageVersion}_x64.exe"
 Move-Item $setupExe $finalExe -Force
 $releaseNotesFile = "RELEASE_NOTES_${packageVersion}.md"
@@ -140,6 +125,7 @@ $notePath = Join-Path $dist 'KURULUM_NOTU.txt'
 if (Test-Path $notePath) {
     @('', 'BU DAGITIM PAKETINE OZEL SHA-256', '--------------------------------', "Dosya : $(Split-Path $finalExe -Leaf)", "SHA256: $hash") | Add-Content $notePath -Encoding UTF8
 }
-Remove-Item $publish -Recurse -Force
+if ([IO.Path]::GetDirectoryName([IO.Path]::GetFullPath($publish)) -ne [IO.Path]::GetFullPath($PSScriptRoot)) { Fail 'Yayın temizleme hedefi proje kökünün dışında.' }
+Remove-Item -LiteralPath $publish -Recurse -Force
 Write-Host "BAŞARILI: $finalExe" -ForegroundColor Green
 Write-Host "SHA-256: $hash"
