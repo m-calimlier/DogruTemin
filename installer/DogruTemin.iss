@@ -11,6 +11,7 @@ AppName=DoğruTemin
 AppVersion={#AppVersion}
 VersionInfoVersion={#AppVersion}.0
 AppPublisher=Murat ÇALIMLIER
+AppPublisherURL=https://github.com/m-calimlier/DogruTemin
 DefaultDirName={localappdata}\Programs\DoğruTemin
 DefaultGroupName=DoğruTemin
 PrivilegesRequired=lowest
