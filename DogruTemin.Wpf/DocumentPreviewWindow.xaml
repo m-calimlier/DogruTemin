@@ -4,18 +4,18 @@
         Icon="Assets/AppIcon.ico"
         Title="DoğruTemin - Belge Önizleme"
         Width="1080" Height="820" MinWidth="820" MinHeight="620"
-        WindowStartupLocation="CenterOwner" Background="#E9EEF4" UseLayoutRounding="True" SnapsToDevicePixels="True">
+        WindowStartupLocation="CenterOwner" Background="{StaticResource Navy950Brush}" UseLayoutRounding="True" SnapsToDevicePixels="True">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="56"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Border Background="#031C38" Padding="20,0">
+        <Border Background="#0B162B" Padding="20,0">
             <Grid>
                 <TextBlock Text="BELGE ÖNİZLEME" Foreground="White" FontSize="18" FontWeight="Bold" VerticalAlignment="Center"/>
                 <TextBlock Text="A4 • DoğruTemin C# belge motoru" Foreground="#B9C8D8" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Right"/>
             </Grid>
         </Border>
-        <DocumentViewer x:Name="Viewer" Grid.Row="1" Margin="12" Background="#DCE4EC"/>
+        <DocumentViewer x:Name="Viewer" Grid.Row="1" Margin="12" Background="#23374E"/>
     </Grid>
 </Window>

@@ -129,19 +129,19 @@ public partial class MainWindow
         if (critical > 0)
         {
             ControlOverallStatusText.Text = "EKSİK";
-            ControlOverallStatusText.Foreground = new SolidColorBrush(Color.FromRgb(190, 61, 61));
+            ControlOverallStatusText.Foreground = new SolidColorBrush(Color.FromRgb(255, 165, 165));
             ControlOverallHintText.Text = $"{critical} kritik konu düzeltilmeli";
         }
         else if (warning > 0)
         {
             ControlOverallStatusText.Text = "KONTROL";
-            ControlOverallStatusText.Foreground = new SolidColorBrush(Color.FromRgb(215, 117, 0));
+            ControlOverallStatusText.Foreground = new SolidColorBrush(Color.FromRgb(244, 196, 94));
             ControlOverallHintText.Text = $"{warning} uyarı gözden geçirilmeli";
         }
         else
         {
             ControlOverallStatusText.Text = "HAZIR";
-            ControlOverallStatusText.Foreground = new SolidColorBrush(Color.FromRgb(36, 138, 80));
+            ControlOverallStatusText.Foreground = new SolidColorBrush(Color.FromRgb(126, 226, 166));
             ControlOverallHintText.Text = "Kritik hata veya uyarı yok";
         }
     }
@@ -328,7 +328,7 @@ public partial class MainWindow
             var document = BuildSelectedOfficialDocumentForExport("yazdırma");
             if (document is null) return;
             var dialog = new PrintDialog();
-            if (dialog.ShowDialog() != true) return;
+            if (!WorkspacePrinting.ConfirmPhysicalQueue(dialog)) return;
             SavePreparedOutput(document);
             dialog.PrintDocument(document.DocumentPaginator, "DoğruTemin Resmî Belgeleri");
         }

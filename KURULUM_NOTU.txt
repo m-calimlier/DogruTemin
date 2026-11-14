@@ -1,4 +1,4 @@
-DOGRUTEMIN 4.3.0 - KURULUM NOTU
+DOGRUTEMIN 4.4.0 - KURULUM NOTU
 =====================================
 
 DoğruTemin Windows 10/11 x64 için self-contained hazırlanır. Hedef bilgisayarda .NET SDK, .NET Runtime, Visual Studio veya Excel gerekmez.
@@ -10,10 +10,10 @@ KULLANICI VERISI
 - Güncelleme ve kaldırma işlemleri Masaüstü\DoğruTemin içindeki veri, yedek, log ve PDF dosyalarını silmez.
 
 KOD IMZASI VE SMARTSCREEN
-- 4.3.0 sürümü yayın kararıyla Authenticode sertifikası olmadan dağıtılmaktadır.
+- 4.4.0 sürümü yayın kararıyla Authenticode sertifikası olmadan dağıtılmaktadır.
 - Windows SmartScreen bazı bilgisayarlarda "Bilinmeyen yayıncı" uyarısı gösterebilir.
 - Kurulum dosyasını yalnız doğrulanmış GitHub Release kaynağından alın ve SHA-256 değeriyle doğrulayın.
-- Bu imzasız dağıtım kararı 4.3.0 sürümüne özeldir; sonraki sürümlerde imza politikası yeniden uygulanır.
+- Bu imzasız dağıtım kararı 4.4.0 sürümüne özeldir; sonraki sürümlerde imza politikası yeniden uygulanır.
 
 DOGRULAMA
 - Setup üretiminden önce Release build ve otomatik testler çalışır.

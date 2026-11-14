@@ -27,8 +27,8 @@
 
     <Grid>
         <Border x:Name="InputBorder"
-                Background="#082744"
-                BorderBrush="#365874"
+                Background="#23374E"
+                BorderBrush="#617C99"
                 BorderThickness="1"
                 CornerRadius="6"
                 SnapsToDevicePixels="True">
@@ -74,7 +74,7 @@
                         Click="CalendarButton_Click"
                         ToolTip="Tarih seç"
                         Focusable="False">
-                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE787;" FontSize="20" Foreground="#FFB41F"
+                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE787;" FontSize="20" Foreground="#F4C45E"
                                HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 </Button>
             </Grid>

@@ -44,7 +44,7 @@ public partial class MainWindow
         {
             if (!string.IsNullOrWhiteSpace(RecoverySessionService.PendingNotice))
             {
-                UiNotificationService.Show(this, RecoverySessionService.PendingNotice!, TimeSpan.FromSeconds(8));
+                MessageBox.Show(this, RecoverySessionService.PendingNotice!, "DoğruTemin", MessageBoxButton.OK, MessageBoxImage.Warning);
                 RecoverySessionService.ClearPendingNotice();
             }
         };

@@ -129,7 +129,7 @@ public partial class MainWindow
     private void RestoreSafetyBackup_Click(object sender, RoutedEventArgs e)
     {
         if (!ConfirmUnsavedWork("yedekten geri yüklemeye devam et", "DoğruTemin - Yedekten Geri Yükle")) return;
-        var dialog = new OpenFileDialog
+        var dialog = new WorkspaceOpenFileDialog
         {
             Title = "DoğruTemin Yedeğini Seç",
             Filter = "DoğruTemin ZIP yedeği (*.zip)|*.zip|Tüm dosyalar (*.*)|*.*",
@@ -254,7 +254,7 @@ public partial class MainWindow
         StatisticsApproximateText.Text = approximateTotal > 0m ? NumberParser.Money(approximateTotal) : "—";
         StatisticsFinalText.Text = finalTotal > 0m ? NumberParser.Money(finalTotal) : "—";
         StatisticsSavingsText.Text = (approximateTotal > 0m || finalTotal > 0m) ? NumberParser.Money(savingsTotal) : "—";
-        StatisticsSavingsText.Foreground = savingsTotal < 0m ? new SolidColorBrush(Color.FromRgb(190, 55, 55)) : new SolidColorBrush(Color.FromRgb(36, 138, 80));
+        StatisticsSavingsText.Foreground = savingsTotal < 0m ? new SolidColorBrush(Color.FromRgb(255, 165, 165)) : new SolidColorBrush(Color.FromRgb(126, 226, 166));
         var rate = approximateTotal > 0m ? (savingsTotal / approximateTotal) * 100m : 0m;
         StatisticsSavingsRateText.Text = "%" + rate.ToString("N2", CultureInfo.GetCultureInfo("tr-TR"));
         StatisticsAverageText.Text = financialCompleteCount > 0 ? NumberParser.Money(finalTotal / financialCompleteCount) : "—";

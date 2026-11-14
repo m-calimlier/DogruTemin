@@ -39,7 +39,7 @@ public static class ResponsiveLayoutService
             "1920x1080" => new Size(1920, 1080),
             _ => new Size(automatic.WindowWidthDip, automatic.WindowHeightDip)
         };
-        return new(Math.Min(requested.Width, workWidth * .96), Math.Min(requested.Height, workHeight * .94));
+        return new(Math.Min(requested.Width, workWidth), Math.Min(requested.Height, workHeight));
     }
 
     public static void ApplyPreference(MainWindow window, string preference)

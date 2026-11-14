@@ -1421,7 +1421,7 @@ public partial class MainWindow : Window
             var document = BuildSelectedOfficialDocumentForExport("yazdırma");
             if (document is null) return;
             var dialog = new PrintDialog();
-            if (dialog.ShowDialog() != true) return;
+            if (!WorkspacePrinting.ConfirmPhysicalQueue(dialog)) return;
             dialog.PrintDocument(document.DocumentPaginator, "DoğruTemin Resmî Belgeleri");
         }
         catch (Exception ex)
@@ -2272,7 +2272,7 @@ public partial class MainWindow : Window
     {
         if (!ConfirmUnsavedWork("yedekten geri yüklemeye devam et", "DoğruTemin - Yedekten Geri Yükle")) return;
 
-        var dialog = new OpenFileDialog
+        var dialog = new WorkspaceOpenFileDialog
         {
             Title = "DoğruTemin Yedeğini Seç",
             Filter = "DoğruTemin ZIP yedeği (*.zip)|*.zip|Tüm dosyalar (*.*)|*.*",

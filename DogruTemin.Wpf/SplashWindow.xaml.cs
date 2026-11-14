@@ -1,14 +1,17 @@
 using System;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media.Animation;
+using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace DogruTemin.Wpf;
 
 public partial class SplashWindow : Window
 {
-    private const double ProgressTrackWidth = 410.0;
+    private const double RingCenter = 60;
+    private const double RingRadius = 54;
+    private const int SegmentCount = 28;
     private int _reportedPercent;
 
     public SplashWindow()
@@ -20,11 +23,7 @@ public partial class SplashWindow : Window
     private async void SplashWindow_Loaded(object sender, RoutedEventArgs e)
     {
         VersionText.Text = AppVersionInfo.DisplayVersion;
-        var spin = new DoubleAnimation(0, 360, TimeSpan.FromSeconds(1))
-        {
-            RepeatBehavior = RepeatBehavior.Forever
-        };
-        SpinnerRotate.BeginAnimation(System.Windows.Media.RotateTransform.AngleProperty, spin);
+        ProgressTrack.Data = CreateRing(100);
 
         try
         {
@@ -62,75 +61,79 @@ public partial class SplashWindow : Window
 
     private async Task RunSmoothPreloadAsync()
     {
-        ProgressFill.BeginAnimation(FrameworkElement.WidthProperty, null);
-        ProgressFill.Width = ProgressTrackWidth * (StartupProgressProfile.InitialPercent / 100.0);
-        _reportedPercent = StartupProgressProfile.InitialPercent;
-        PercentText.Text = $"%{_reportedPercent}";
-
-        var animation = new DoubleAnimation
-        {
-            From = ProgressFill.Width,
-            To = ProgressTrackWidth * (StartupProgressProfile.PreloadPercent / 100.0),
-            Duration = TimeSpan.FromMilliseconds(StartupProgressProfile.PreloadDurationMs),
-            EasingFunction = new CubicEase { EasingMode = EasingMode.EaseInOut },
-            FillBehavior = FillBehavior.HoldEnd
-        };
-
-        ProgressFill.BeginAnimation(
-            FrameworkElement.WidthProperty,
-            animation,
-            HandoffBehavior.SnapshotAndReplace);
-
         var start = Environment.TickCount64;
         while (Environment.TickCount64 - start < StartupProgressProfile.PreloadDurationMs)
         {
-            var elapsed = Math.Clamp(
-                (Environment.TickCount64 - start) / (double)StartupProgressProfile.PreloadDurationMs,
-                0.0,
-                1.0);
-            var percent = StartupProgressProfile.CalculatePreloadPercent(elapsed);
-            if (percent > _reportedPercent)
-            {
-                _reportedPercent = percent;
-                PercentText.Text = $"%{percent}";
-            }
+            var elapsed = (Environment.TickCount64 - start) / (double)StartupProgressProfile.PreloadDurationMs;
+            UpdateProgress(StartupProgressProfile.CalculatePreloadPercent(elapsed));
             await Task.Delay(StartupProgressProfile.FrameDelayMs);
         }
-
-        ProgressFill.BeginAnimation(FrameworkElement.WidthProperty, null);
-        ProgressFill.Width = ProgressTrackWidth * (StartupProgressProfile.PreloadPercent / 100.0);
-        _reportedPercent = StartupProgressProfile.PreloadPercent;
-        PercentText.Text = $"%{_reportedPercent}";
+        UpdateProgress(StartupProgressProfile.PreloadPercent);
     }
 
     private void SetProgress(int percent, string stage)
     {
-        _reportedPercent = Math.Max(
-            _reportedPercent,
-            Math.Clamp(percent, 0, StartupProgressProfile.MaximumReportedBeforeComplete));
-        PercentText.Text = $"%{_reportedPercent}";
         StageText.Text = stage;
+        UpdateProgress(Math.Clamp(percent, 0, StartupProgressProfile.MaximumReportedBeforeComplete));
         Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+    }
+
+    private void UpdateProgress(int percent)
+    {
+        _reportedPercent = Math.Max(_reportedPercent, Math.Clamp(percent, 0, 100));
+        PercentText.Text = $"%{_reportedPercent}";
+        ProgressArc.Data = CreateRing(_reportedPercent);
+        SetStages(_reportedPercent switch
+        {
+            < 34 => 0,
+            < 68 => 1,
+            < 100 => 2,
+            _ => 3
+        });
     }
 
     private void CompleteProgress(string stage)
     {
-        ProgressFill.BeginAnimation(FrameworkElement.WidthProperty, null);
-        var currentWidth = ProgressFill.Width;
-        ProgressFill.BeginAnimation(
-            FrameworkElement.WidthProperty,
-            new DoubleAnimation(
-                currentWidth,
-                ProgressTrackWidth,
-                TimeSpan.FromMilliseconds(StartupProgressProfile.CompletionDurationMs))
-            {
-                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut },
-                FillBehavior = FillBehavior.HoldEnd
-            },
-            HandoffBehavior.SnapshotAndReplace);
-
-        _reportedPercent = 100;
-        PercentText.Text = "%100";
         StageText.Text = stage;
+        UpdateProgress(100);
     }
+
+    private static StreamGeometry CreateRing(int percent)
+    {
+        var geometry = new StreamGeometry();
+        using (var context = geometry.Open())
+        {
+            var segmentAngle = 2 * Math.PI / SegmentCount;
+            var progressAngle = percent * 2 * Math.PI / 100;
+            for (var index = 0; index < SegmentCount; index++)
+            {
+                var start = index * segmentAngle + .013;
+                if (start >= progressAngle) break;
+                var end = Math.Min(progressAngle, (index + 1) * segmentAngle - .013);
+                context.BeginFigure(PointOnRing(start), false, false);
+                context.ArcTo(PointOnRing(end), new Size(RingRadius, RingRadius), 0, false, SweepDirection.Clockwise, true, false);
+            }
+        }
+        geometry.Freeze();
+        return geometry;
+    }
+
+    private static Point PointOnRing(double angle) =>
+        new(RingCenter + RingRadius * Math.Sin(angle), RingCenter - RingRadius * Math.Cos(angle));
+
+    private void SetStages(int activeStage)
+    {
+        var pending = (Brush)FindResource("StagePending");
+        var done = (Brush)FindResource("StageDone");
+        var active = (Brush)FindResource("StageActive");
+        StageOne.Stroke = activeStage > 0 ? done : active;
+        StageTwo.Stroke = activeStage == 1 ? active : activeStage > 1 ? done : pending;
+        StageThree.Stroke = activeStage == 2 ? active : activeStage > 2 ? done : pending;
+        StageOneCheck.Visibility = activeStage > 0 ? Visibility.Visible : Visibility.Collapsed;
+        StageTwoCheck.Visibility = activeStage > 1 ? Visibility.Visible : Visibility.Collapsed;
+        StageThreeCheck.Visibility = activeStage > 2 ? Visibility.Visible : Visibility.Collapsed;
+        ActiveStageDot.Visibility = activeStage == 3 ? Visibility.Collapsed : Visibility.Visible;
+        Canvas.SetTop(ActiveStageDot, 7.5 + 40 * activeStage);
+    }
+
 }

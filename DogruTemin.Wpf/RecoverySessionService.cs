@@ -24,12 +24,11 @@ public static class RecoverySessionService
             {
                 try
                 {
-                    var backup = safetyServiceFactory().CreateManualSafetyBackup("BeklenmeyenKapanmaSonrasi");
-                    PendingNotice = "Önceki DoğruTemin oturumu normal kapanmamış görünüyor. Mevcut veriler korunarak güvenlik yedeği alındı:\n" + backup;
+                    safetyServiceFactory().CreateManualSafetyBackup("BeklenmeyenKapanmaSonrasi");
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    PendingNotice = "Önceki DoğruTemin oturumu normal kapanmamış görünüyor. Otomatik yedek oluşturulamadı; Hakkında / Güvenlik ekranından veri bütünlüğünü kontrol edin. Ayrıntı: " + ex.Message;
+                    PendingNotice = "Otomatik güvenlik yedeği alınamadı. Hakkında / Güvenlik ekranından yeniden yedek alabilirsiniz.";
                 }
             }
 

@@ -67,6 +67,10 @@ public sealed class ResponsiveLayoutTests
         try
         {
             var storage = new DogruTemin.Core.Services.StorageService(folder);
+            var defaults = storage.LoadSettings();
+            Assert.Equal("1920x1080", defaults.WindowSizePreference);
+            Assert.Equal(new System.Windows.Size(1920, 1080),
+                ResponsiveLayoutService.CalculatePreference(1920, 1080, defaults.WindowSizePreference));
             storage.SaveSettings(new() { WindowSizePreference = "1366x768" });
             Assert.Equal("1366x768", storage.LoadSettings().WindowSizePreference);
             storage.SaveSettings(new() { WindowSizePreference = "invalid" });

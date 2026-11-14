@@ -45,14 +45,25 @@ public sealed class DiagnosticAndRecoveryTests : IDisposable
 
         RecoverySessionService.Begin(storage, () => new ApplicationSafetyService(storage));
 
-        Assert.NotNull(RecoverySessionService.PendingNotice);
-        Assert.Contains("güvenlik yedeği", RecoverySessionService.PendingNotice, StringComparison.CurrentCultureIgnoreCase);
+        Assert.Null(RecoverySessionService.PendingNotice);
         Assert.True(File.Exists(marker));
         Assert.NotEmpty(Directory.EnumerateFiles(Path.Combine(storage.BackupFolder, "Güvenlik"), "*.zip"));
 
         RecoverySessionService.EndCleanly();
         RecoverySessionService.ClearPendingNotice();
         Assert.False(File.Exists(marker));
+    }
+
+    [Fact]
+    public void FailedRecoveryBackupLeavesAWarning()
+    {
+        var storage = NewStorage("failed-recovery");
+        Directory.CreateDirectory(storage.DataFolder);
+        File.WriteAllText(Path.Combine(storage.DataFolder, "oturum_acik.marker"), "PID: 999999");
+
+        RecoverySessionService.Begin(storage, () => throw new IOException("Test failure"));
+
+        Assert.Contains("güvenlik yedeği alınamadı", RecoverySessionService.PendingNotice, StringComparison.Ordinal);
     }
 
     private StorageService NewStorage(string name)

@@ -5,59 +5,59 @@
         Title="DoğruTemin"
         Width="430" Height="645" MinWidth="430" MaxWidth="430" MinHeight="645" MaxHeight="645"
         SizeToContent="Manual" WindowStyle="None" ResizeMode="NoResize"
-        WindowStartupLocation="CenterScreen" Background="#00152D"
+        WindowStartupLocation="CenterScreen" Background="#091426"
         AllowsTransparency="False" ShowInTaskbar="True"
         UseLayoutRounding="True" SnapsToDevicePixels="True">
+    <Window.Resources>
+        <SolidColorBrush x:Key="StagePending" Color="#42658C"/>
+        <SolidColorBrush x:Key="StageDone" Color="#76E8F3"/>
+        <SolidColorBrush x:Key="StageActive" Color="#FFD552"/>
+        <LinearGradientBrush x:Key="Gold" StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="#FFE27A" Offset="0"/>
+            <GradientStop Color="#FFBF24" Offset="1"/>
+        </LinearGradientBrush>
+    </Window.Resources>
     <Viewbox Stretch="Uniform" StretchDirection="Both">
-      <Grid Width="600" Height="900">
-        <!-- Kilitli tasarımın birebir görsel tabanı -->
-        <Image Source="Assets/SplashReference.png" Stretch="UniformToFill" RenderOptions.BitmapScalingMode="HighQuality"/>
-
-        <!-- Statik referanstaki yükleme satırını kapatıp gerçek WPF yükleme katmanını çiziyoruz. -->
-        <Border Background="#F4021731" CornerRadius="14" HorizontalAlignment="Center"
-                Width="520" Height="150" VerticalAlignment="Top" Margin="0,394,0,0"/>
-
-        <StackPanel Width="500" VerticalAlignment="Top" Margin="0,414,0,0" HorizontalAlignment="Center">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <Grid Width="26" Height="26" Margin="0,0,12,0">
-                    <Ellipse Stroke="#344C67" StrokeThickness="3"/>
-                    <Path Stroke="#FFB41F" StrokeThickness="3" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
-                          Data="M13,1 A12,12 0 0 1 25,13"/>
-                    <Grid.RenderTransform>
-                        <RotateTransform x:Name="SpinnerRotate" CenterX="13" CenterY="13"/>
-                    </Grid.RenderTransform>
-                </Grid>
-                <TextBlock Text="Yükleniyor, lütfen bekleyiniz..." Foreground="White" FontSize="19" VerticalAlignment="Center"/>
-            </StackPanel>
-
-            <Grid Margin="0,26,0,0">
-                <Border Height="15" Background="#17395B" CornerRadius="8" Margin="20,0,70,0"/>
-                <Border x:Name="ProgressFill" Height="15" Background="#FFB41F" CornerRadius="8" Width="0"
-                        HorizontalAlignment="Left" Margin="20,0,0,0"/>
-                <TextBlock x:Name="PercentText" Text="%0" Foreground="#FFB41F" FontSize="21" FontWeight="Bold"
-                           HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,-8,12,0"/>
+        <Grid Width="600" Height="900">
+            <Image Source="Assets/SplashReference.png" Stretch="UniformToFill" RenderOptions.BitmapScalingMode="HighQuality"/>
+            <!-- Özgün zemin ve logo korunur. Görsele gömülü yükleme yazılarının üzerine canlı durum çizilir. -->
+            <Border Width="485" Height="352" Margin="0,383,0,0" VerticalAlignment="Top"
+                    HorizontalAlignment="Center" Background="#031429" CornerRadius="18">
+                <Grid>
+            <Canvas Width="26" Height="106" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,6,0,0" IsHitTestVisible="False">
+                <Path Stroke="#52769B" StrokeThickness="1.5" Data="M13,25 V39 M13,65 V79"/>
+                <Ellipse x:Name="StageOne" Width="22" Height="22" Canvas.Left="2" Canvas.Top="1" Fill="#142E4D" Stroke="{StaticResource StagePending}" StrokeThickness="1.6"/>
+                <Ellipse x:Name="StageTwo" Width="22" Height="22" Canvas.Left="2" Canvas.Top="41" Fill="#142E4D" Stroke="{StaticResource StagePending}" StrokeThickness="1.6"/>
+                <Ellipse x:Name="StageThree" Width="22" Height="22" Canvas.Left="2" Canvas.Top="81" Fill="#142E4D" Stroke="{StaticResource StagePending}" StrokeThickness="1.6"/>
+                <Path x:Name="StageOneCheck" Stroke="{StaticResource StageDone}" StrokeThickness="2" Data="M8,12 L12,16 18,9" Visibility="Collapsed"/>
+                <Path x:Name="StageTwoCheck" Stroke="{StaticResource StageDone}" StrokeThickness="2" Data="M8,52 L12,56 18,49" Visibility="Collapsed"/>
+                <Path x:Name="StageThreeCheck" Stroke="{StaticResource StageDone}" StrokeThickness="2" Data="M8,92 L12,96 18,89" Visibility="Collapsed"/>
+                <Ellipse x:Name="ActiveStageDot" Width="9" Height="9" Canvas.Left="8.5" Canvas.Top="7.5" Fill="{StaticResource StageActive}">
+                    <Ellipse.Effect><DropShadowEffect Color="#FFC52C" ShadowDepth="0" BlurRadius="12" Opacity=".9"/></Ellipse.Effect>
+                </Ellipse>
+            </Canvas>
+            <Grid Width="120" Height="120" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,112,0,0">
+                <Ellipse Margin="6" Fill="#08182F"/>
+                <Path x:Name="ProgressTrack" Stroke="#476C93" StrokeThickness="6"/>
+                <Path x:Name="ProgressArc" Stroke="{StaticResource Gold}" StrokeThickness="6">
+                    <Path.Effect><DropShadowEffect Color="#FFD04A" BlurRadius="12" ShadowDepth="0" Opacity=".52"/></Path.Effect>
+                </Path>
+                <TextBlock x:Name="PercentText" Text="%0" FontSize="31" FontWeight="Bold" Foreground="{StaticResource Gold}"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Grid>
-            <TextBlock x:Name="StageText" Text="Bileşenler hazırlanıyor..." Foreground="#B8C6D8" FontSize="12"
-                       TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType"
-                       HorizontalAlignment="Center" Margin="0,15,0,0"/>
-            <TextBlock x:Name="VersionText" Text="v4.2.0" Foreground="#8FA8C0" FontSize="11.5"
-                       TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType"
-                       HorizontalAlignment="Center" Margin="0,7,0,0"/>
-        </StackPanel>
-
-        <!-- Geliştirici adı arka plandan bağımsız, net okunabilir bir katmanda gösterilir. -->
-        <Border Width="360" Height="82" VerticalAlignment="Bottom" HorizontalAlignment="Center"
-                Margin="0,0,0,46" Background="#F2051C35" BorderBrush="#5AFFB41F"
-                BorderThickness="1" CornerRadius="14">
-            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                <TextBlock Text="GELİŞTİREN" Foreground="#FFB41F" FontSize="11.5" FontWeight="SemiBold"
-                           HorizontalAlignment="Center"
-                           TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType"/>
-                <TextBlock Text="Murat Çalımlıer" Foreground="White" FontSize="23" FontWeight="Bold"
-                           Margin="0,5,0,0" HorizontalAlignment="Center"
-                           TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType"/>
-            </StackPanel>
-        </Border>
-    </Grid>
+                    <TextBlock x:Name="StageText" Text="Bileşenler hazırlanıyor..." VerticalAlignment="Top"
+                               Margin="15,238,15,0" Foreground="#F3F5F8" FontSize="16" TextAlignment="Center" TextWrapping="Wrap"/>
+                    <Border Width="292" Height="80" VerticalAlignment="Top" Margin="0,268,0,0" CornerRadius="12"
+                    Background="#09192F" BorderBrush="{StaticResource Gold}" BorderThickness="1">
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="Created by" Foreground="{StaticResource Gold}" FontSize="12" FontWeight="Bold" TextAlignment="Center"/>
+                    <TextBlock Text="Murat ÇALIMLIER" FontSize="22" FontWeight="Bold" Foreground="{StaticResource Gold}"
+                               TextAlignment="Center" Margin="0,3,0,6"/>
+                    <TextBlock x:Name="VersionText" Foreground="#9AB3CD" FontSize="12" TextAlignment="Center"/>
+                </StackPanel>
+            </Border>
+                </Grid>
+            </Border>
+        </Grid>
     </Viewbox>
 </Window>

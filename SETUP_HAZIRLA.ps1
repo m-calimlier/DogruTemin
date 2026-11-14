@@ -1,4 +1,4 @@
-﻿param(
+param(
     [string]$CompilerPath = '',
     [switch]$AllowPrerelease,
     [switch]$AllowUnsignedFinal,
@@ -54,8 +54,8 @@ if (-not $isPrerelease -and [string]::IsNullOrWhiteSpace($CertificateThumbprint)
     Fail 'Final Setup için kod imzalama sertifikası zorunludur. 4.3.0 imzasız istisnası için exe_olustur\EXE_OLUSTUR.bat kullanın.'
 }
 if (-not $isPrerelease -and [string]::IsNullOrWhiteSpace($CertificateThumbprint) -and $AllowUnsignedFinal) {
-    if ($version -ne '4.3.0') { Fail 'Sertifikasız final dağıtım yalnızca onaylanmış 4.3.0 sürümü için açıktır.' }
-    Write-Host 'UYARI: Onaylanmış 4.3.0 dağıtımı kod imzası olmadan üretilecek. Windows SmartScreen bilinmeyen yayıncı uyarısı gösterebilir.' -ForegroundColor Yellow
+    if ($version -notin @('4.3.0', '4.4.0')) { Fail 'Sertifikasız final dağıtım yalnızca onaylanmış 4.3.0 ve 4.4.0 sürümleri için açıktır.' }
+    Write-Host 'UYARI: Onaylanmış final dağıtımı kod imzası olmadan üretilecek. Windows SmartScreen bilinmeyen yayıncı uyarısı gösterebilir.' -ForegroundColor Yellow
 }
 
 $dotnet = Get-Command dotnet -ErrorAction SilentlyContinue
@@ -93,7 +93,7 @@ foreach ($file in 'DogruTemin.exe','coreclr.dll','hostfxr.dll','PresentationFram
 }
 
 if ([string]::IsNullOrWhiteSpace($CertificateThumbprint)) {
-    Write-Host 'Kod imzalama sertifikası tanımlı değil; onaylanmış 4.3.0 Setup imzasız üretilecek.' -ForegroundColor Yellow
+    Write-Host 'Kod imzalama sertifikası tanımlı değil; onaylanmış Setup imzasız üretilecek.' -ForegroundColor Yellow
 } else {
     Sign-File (Join-Path $appOut 'DogruTemin.exe')
 }

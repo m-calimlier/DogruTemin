@@ -1,6 +1,6 @@
 # DoğruTemin Windows Kod İmzalama
 
-DoğruTemin final dağıtımlarında Authenticode kod imzası kullanılır; yalnız aşağıda açıklanan 4.3.0 sürümü açık dağıtım kararıyla bu zorunluluktan muaftır. Depoya sertifika, PFX dosyası, özel anahtar veya parola **asla** eklenmez.
+DoğruTemin final dağıtımlarında Authenticode kod imzası kullanılır; yalnız aşağıda açıklanan 4.3.0 ve 4.4.0 sürümleri açık dağıtım kararıyla bu zorunluluktan muaftır. Depoya sertifika, PFX dosyası, özel anahtar veya parola **asla** eklenmez.
 
 ## Üretim kullanımı
 
@@ -19,12 +19,12 @@ $env:DOGRUTEMIN_SIGN_CERT_SHA1 = '<sertifika-thumbprint>'
 
 `Directory.Build.props` içindeki `VersionSuffix` boşsa sürüm final kabul edilir. Final sürümde sertifika tanımlı değilse Setup üretimi durur.
 
-Normal final üretiminde sertifika yoksa Setup oluşturulmaz. 4.3.0 için `-AllowUnsignedFinal` seçeneği yalnız `exe_olustur\EXE_OLUSTUR.bat` tarafından kullanılır; başka final sürümlerinde bu seçenek sürüm koruması nedeniyle üretimi durdurur.
+Normal final üretiminde sertifika yoksa Setup oluşturulmaz. 4.3.0 ve 4.4.0 için `-AllowUnsignedFinal` seçeneği yalnız `exe_olustur\EXE_OLUSTUR.bat` tarafından kullanılır; başka final sürümlerinde bu seçenek sürüm koruması nedeniyle üretimi durdurur.
 
 ## RC/test sürümleri
 
 `VersionSuffix` doluyken normal final Setup üretilmez. `-AllowPrerelease` yalnız RC/CI kurulum testleri için kullanılabilir.
 
-## 4.3.0 imzasız dağıtım istisnası
+## 4.3.0 ve 4.4.0 imzasız dağıtım istisnası
 
-Bakım sorumlusunun açık kararıyla 4.3.0 sürümü Authenticode sertifikası olmadan dağıtılabilir. Windows SmartScreen / "Bilinmeyen yayıncı" uyarısı beklenebilir. Bu istisna yalnız 4.3.0 sürümünü kapsar; sonraki final sürümlerde yukarıdaki imzalama zorunluluğu geçerlidir. 4.3.0 paketini `exe_olustur\EXE_OLUSTUR.bat` üretir ve pakete SHA-256 doğrulama dosyası ekler.
+Bakım sorumlusunun açık kararıyla 4.3.0 ve 4.4.0 sürümleri Authenticode sertifikası olmadan dağıtılabilir. Windows SmartScreen / "Bilinmeyen yayıncı" uyarısı beklenebilir. Bu istisna yalnız 4.3.0 ve 4.4.0 sürümlerini kapsar; sonraki final sürümlerde yukarıdaki imzalama zorunluluğu geçerlidir. Bu paketleri `exe_olustur\EXE_OLUSTUR.bat` üretir ve pakete SHA-256 doğrulama dosyası ekler.
