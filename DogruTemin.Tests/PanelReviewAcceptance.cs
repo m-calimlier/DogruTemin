@@ -33,8 +33,8 @@ internal static class PanelReviewAcceptance
             }
             Assert.Equal(1, ((FrameworkElement)window.FindName("WorkspaceLayout")).LayoutTransform.Value.M11);
             if (view == "Firms")
-                Assert.Equal(size.Width < 1250 ? 2 : 0, Grid.GetRow((FrameworkElement)window.FindName("OffersView")));
-            if (size.Width == 1366)
+                Assert.Equal(window.ActualWidth < 1250 ? 2 : 0, Grid.GetRow((FrameworkElement)window.FindName("OffersView")));
+            if (window.ActualWidth >= 1250 && window.ActualHeight >= 740)
             {
                 var navigation = (ScrollViewer)window.FindName("NavigationScroll");
                 Assert.True(navigation.ScrollableHeight < 1, "Normal pencerede menü tamamen görünmeli.");
