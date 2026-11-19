@@ -99,19 +99,37 @@ begin
 end;
 
 #ifndef CustomDataPreparation
-<event('CurStepChanged')>
-procedure PrepareDesktopData(CurStep: TSetupStep);
-var ExitCode: Integer; Arguments: String;
+<event('PrepareToInstall')>
+function PrepareDesktopData(var NeedsRestart: Boolean): String;
+var ExitCode: Integer; Arguments, DiagnosticLog, PowerShellPath: String;
 begin
-  if CurStep <> ssInstall then Exit;
+  Result := '';
+  if WizardSilent or not ResponsibilityAccepted or not ResponsibilityCheck.Checked then Exit;
+  if WizardIsTaskSelected('cleandata') and not CleanConfirmed then Exit;
+  DiagnosticLog := ExpandConstant('{localappdata}\DoğruTeminKurulum\veri-hazirlama.log');
+  DeleteFile(DiagnosticLog);
   ExtractTemporaryFile('Prepare-DesktopData.ps1');
   Arguments := '-NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "' +
-    ExpandConstant('{tmp}\Prepare-DesktopData.ps1') + '" -Desktop "' + ExpandConstant('{userdesktop}') + '"';
+    ExpandConstant('{tmp}\Prepare-DesktopData.ps1') + '" -Desktop "' + ExpandConstant('{userdesktop}') +
+    '" -DiagnosticLog "' + DiagnosticLog + '"';
   if WizardIsTaskSelected('cleandata') then Arguments := Arguments + ' -Clean';
-  if not Exec(ExpandConstant('{sys}\WindowsPowerShell\v1.0\powershell.exe'), Arguments,
-    ExpandConstant('{tmp}'), SW_HIDE, ewWaitUntilTerminated, ExitCode) then
-    RaiseException('Veri hazırlama aracı başlatılamadı. Kurulum durduruldu.');
+  PowerShellPath := ExpandConstant('{sys}\WindowsPowerShell\v1.0\powershell.exe');
+  if not Exec(PowerShellPath, Arguments, ExpandConstant('{tmp}'), SW_HIDE, ewWaitUntilTerminated, ExitCode) then
+  begin
+    Log(Format('Veri hazırlama aracı başlatılamadı. Windows hata kodu: %d', [ExitCode]));
+    Result := Format('Veri hazırlama aracı başlatılamadı (Windows hata kodu %d).', [ExitCode]) + #13#10 +
+      'Kurumunuzun teknik desteğinden Windows PowerShell erişimini kontrol etmesini isteyin.';
+    Exit;
+  end;
   if ExitCode <> 0 then
-    RaiseException('Veriler hazırlanamadı. Masaüstü izinlerini ve açık programları kontrol edin. Kurulum durduruldu.');
+  begin
+    Log(Format('Veri hazırlama başarısız. Çıkış kodu: %d. Günlük: %s', [ExitCode, DiagnosticLog]));
+    Result := 'Veri klasörü hazırlanamadı. Açık DoğruTemin pencerelerini kapatın ve Masaüstü klasörüne dosya kaydedebildiğinizi kontrol edin.' +
+      '' + #13#10#13#10 + 'Ardından Yeniden Dene düğmesine basın.';
+    if FileExists(DiagnosticLog) then
+      Result := Result + #13#10 + 'Teknik ayrıntılar: ' + DiagnosticLog
+    else
+      Result := Result + #13#10 + Format('Windows PowerShell çıkış kodu: %d. Teknik desteğiniz betik çalıştırma izinlerini kontrol edebilir.', [ExitCode]);
+  end;
 end;
 #endif

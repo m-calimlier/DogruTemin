@@ -7,3 +7,4 @@ Normal kurulum eski verileri hash doğrulamasıyla taşır; çakışmaları Yede
 Temiz kurulum yalnız bilinen veri alt klasörlerini, ayrı onaydan sonra siler. Program kaldırıldığında kullanıcı verileri korunur.
 Yalnız temiz dotnet publish klasörünü paketleyin; kullanıcı veri klasörünü paketlemeyin.
 Eski DoğruFatura/DoğruTemin NSIS betikleri kapatılmıştır. SETUP_HAZIRLA.ps1 ve DoğruFatura Publish-Installers.ps1 artık Inno Setup kullanır.
+4.4.1 ile Windows tarafından yönlendirilmiş üst klasörler desteklenir. Veri ağacındaki gerçek bağlantılar reddedilir. Hatalar kurulumun hazırlık sayfasında yeniden denenebilir; teknik günlük %LOCALAPPDATA%\DoğruTeminKurulum\veri-hazirlama.log konumundadır.
