@@ -74,7 +74,7 @@ public static class ResponsiveLayoutService
             if (WorkspaceElements.Find(window, "WorkspaceLayout")is Grid workspace)
             {
                 foreach (var grid in LogicalGrids(workspace))
-                    if (grid.RowDefinitions.Count == 0 && grid.ColumnDefinitions.Count == 3 && grid.ColumnDefinitions[0].Width.IsStar && grid.ColumnDefinitions[2].Width.IsStar && grid.Children.Count is 2 or 3 && grid.Children.Cast<UIElement>().All(c => Grid.GetColumnSpan(c) == 1) && grid.Children.Cast<UIElement>().Count(c => Grid.GetColumn(c) == 0) == 1 && grid.Children.Cast<UIElement>().Count(c => Grid.GetColumn(c) == 2) == 1)
+                    if (grid.Name != "OutputView" && grid.RowDefinitions.Count == 0 && grid.ColumnDefinitions.Count == 3 && grid.ColumnDefinitions[0].Width.IsStar && grid.ColumnDefinitions[2].Width.IsStar && grid.Children.Count is 2 or 3 && grid.Children.Cast<UIElement>().All(c => Grid.GetColumnSpan(c) == 1) && grid.Children.Cast<UIElement>().Count(c => Grid.GetColumn(c) == 0) == 1 && grid.Children.Cast<UIElement>().Count(c => Grid.GetColumn(c) == 2) == 1)
                         pairs.Add(new(grid, grid.ColumnDefinitions.Select(c => c.Width).ToArray(), grid.Children.Cast<UIElement>().Single(c => Grid.GetColumn(c) == 2), grid.Children.Cast<UIElement>().SingleOrDefault(c => Grid.GetColumn(c) == 1)));
                 foreach (var grid in LogicalNodes(workspace).OfType<UniformGrid>().Where(g => g.Columns >= 4))
                     cards.Add((grid, grid.Columns));

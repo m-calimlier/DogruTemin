@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -112,14 +112,20 @@ public sealed class OfferNavigationTests
         Assert.Same(archive, submenu.Children[outputIndex + 1]);
 
         Invoke("ShowView", "Output");
-        window.UpdateLayout();
         var output = Assert.IsType<Grid>(window.FindName("OutputView"));
         var cards = output.Children.OfType<HeaderedContentControl>().ToArray();
         Assert.Equal(2, cards.Length);
-        var left = cards[0].TransformToAncestor(output).TransformBounds(new Rect(cards[0].RenderSize));
-        var right = cards[1].TransformToAncestor(output).TransformBounds(new Rect(cards[1].RenderSize));
-        Assert.InRange(Math.Abs(left.Top - right.Top), 0, 1);
-        Assert.True(right.Left >= left.Right + 15, "Çıktı kartları yan yana yerleşmeli.");
+        foreach (var width in new[] { 1024d, 1920d })
+        {
+            window.Width = width;
+            window.UpdateLayout();
+            window.Dispatcher.Invoke(() => {}, System.Windows.Threading.DispatcherPriority.ApplicationIdle);
+            var left = cards[0].TransformToAncestor(output).TransformBounds(new Rect(cards[0].RenderSize));
+            var right = cards[1].TransformToAncestor(output).TransformBounds(new Rect(cards[1].RenderSize));
+            Assert.InRange(Math.Abs(left.Top - right.Top), 0, 1);
+            Assert.True(right.Left >= left.Right + 15,
+                $"Output cards must stay side by side at actual viewport {window.ActualWidth}.");
+        }
         var last = window.Products.Last();
         window.Products.Remove(last);
         Invoke("RefreshDocumentPreviews");
