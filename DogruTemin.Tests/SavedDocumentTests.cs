@@ -1,3 +1,4 @@
+﻿using DogruTemin.Core.Modules.Records;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -10,6 +11,52 @@ namespace DogruTemin.Tests;
 
 public sealed class SavedDocumentTests
 {
+    [Fact]
+    public void SeparateGroupsKeepBothFoldersAndVerifyEveryPdf()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "DogruTemin_Groups_" + Guid.NewGuid().ToString("N"));
+        Exception? failure = null;
+        var thread = new Thread(() =>
+        {
+            try
+            {
+                var storage = new StorageService(root);
+                var data = ProcurementBoundaryTests.Scenario(2);
+                storage.Save(data, false);
+                var service = new SavedDocumentService(storage);
+                var preparation = service.ExportSeparate(data, SavedDocumentService.PreparationDocumentTypes);
+                Assert.Equal(2, Directory.GetFiles(preparation, "*.pdf").Length);
+                var final = service.ExportSeparate(data, SavedDocumentService.FinalDocumentTypes);
+                Assert.Equal(4, Directory.GetFiles(final, "*.pdf").Length);
+                Assert.Equal(2, Directory.GetFiles(preparation, "*.pdf").Length);
+                Assert.Equal("Güncel PDF ✓", SavedDocumentService.OutputStatus(data));
+                foreach (var path in Directory.GetFiles(preparation, "*.pdf").Concat(Directory.GetFiles(final, "*.pdf")))
+                {
+                    using var pdf = UglyToad.PdfPig.PdfDocument.Open(path);
+                    Assert.Equal(1, pdf.NumberOfPages);
+                }
+                var second = Path.Combine(final, SavedDocumentService.FileNameFor(OutputDocumentType.ApprovalDocument));
+                File.AppendAllText(second, "changed");
+                Assert.Contains("PDF değişmiş", SavedDocumentService.OutputStatus(data), StringComparison.Ordinal);
+                service.ExportSeparate(data, SavedDocumentService.FinalDocumentTypes);
+                Assert.Equal("Güncel PDF ✓", SavedDocumentService.OutputStatus(data));
+                Assert.Equal(2, Directory.GetFiles(preparation, "*.pdf").Length);
+
+                var oldBytes = File.ReadAllBytes(second);
+                var stale = storage.LoadRecord(data.RecordId, out _)!;
+                data.JobTitle = "Düzeltilmiş alım";
+                storage.Save(data, false);
+                Assert.Throws<InvalidOperationException>(() => service.ExportSeparate(stale, SavedDocumentService.FinalDocumentTypes));
+                Assert.Equal(oldBytes, File.ReadAllBytes(second));
+            }
+            catch (Exception error) { failure = error; }
+        });
+        thread.SetApartmentState(ApartmentState.STA);
+        thread.Start();
+        Assert.True(thread.Join(TimeSpan.FromSeconds(90)));
+        try { if (failure is not null) throw failure; }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    }
     [Fact]
     public void PdfCarriesAllTenProductsAndArchiveTracksCorrectionsAndFileChanges()
     {

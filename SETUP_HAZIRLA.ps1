@@ -54,7 +54,7 @@ if (-not $isPrerelease -and [string]::IsNullOrWhiteSpace($CertificateThumbprint)
     Fail 'Final Setup için kod imzalama sertifikası zorunludur. 4.3.0 imzasız istisnası için exe_olustur\EXE_OLUSTUR.bat kullanın.'
 }
 if (-not $isPrerelease -and [string]::IsNullOrWhiteSpace($CertificateThumbprint) -and $AllowUnsignedFinal) {
-    if ($version -notin @('4.3.0', '4.4.0', '4.4.1')) { Fail 'Sertifikasız final dağıtım yalnızca onaylanmış 4.3.0, 4.4.0 ve 4.4.1 sürümleri için açıktır.' }
+    if ($version -notin @('4.3.0', '4.4.0', '4.4.1', '4.5.0')) { Fail 'Sertifikasız final dağıtım yalnızca onaylanmış 4.3.0, 4.4.0, 4.4.1 ve 4.5.0 sürümleri için açıktır.' }
     Write-Host 'UYARI: Onaylanmış final dağıtımı kod imzası olmadan üretilecek. Windows SmartScreen bilinmeyen yayıncı uyarısı gösterebilir.' -ForegroundColor Yellow
 }
 
@@ -69,6 +69,7 @@ if (!$CompilerPath) { Fail 'Inno Setup 6.6+ gerekli; -CompilerPath ile ISCC.exe 
 $publish = Join-Path $PSScriptRoot '_YAYIN'
 $appOut = Join-Path $publish 'Uygulama'
 $setupOut = Join-Path $publish 'Setup'
+$qualityOut = Join-Path $publish 'Quality'
 $dist = if ([string]::IsNullOrWhiteSpace($OutputRoot)) { Join-Path $PSScriptRoot 'DAGITIM' } else { [IO.Path]::GetFullPath($OutputRoot) }
 if (Test-Path $publish) { Fail 'Eski _YAYIN klasörü mevcut; önce içeriğini kontrol edin.' }
 New-Item -ItemType Directory -Force -Path $appOut,$setupOut,$dist | Out-Null
@@ -78,9 +79,9 @@ Write-Host 'Kalite kapısı: restore + Release build + otomatik testler' -Foregr
 if ($LASTEXITCODE -ne 0) { Fail 'WPF restore başarısız.' }
 & dotnet restore (Join-Path $PSScriptRoot 'DogruTemin.Tests\DogruTemin.Tests.csproj')
 if ($LASTEXITCODE -ne 0) { Fail 'Test restore başarısız.' }
-& dotnet build (Join-Path $PSScriptRoot 'DogruTemin.Wpf\DogruTemin.Wpf.csproj') -c Release --no-restore
+& dotnet build (Join-Path $PSScriptRoot 'DogruTemin.Wpf\DogruTemin.Wpf.csproj') -c Release --no-restore -o $qualityOut
 if ($LASTEXITCODE -ne 0) { Fail 'Release derlemesi başarısız.' }
-& dotnet test (Join-Path $PSScriptRoot 'DogruTemin.Tests\DogruTemin.Tests.csproj') -c Release --no-restore
+& dotnet test (Join-Path $PSScriptRoot 'DogruTemin.Tests\DogruTemin.Tests.csproj') -c Release --no-restore -o $qualityOut
 if ($LASTEXITCODE -ne 0) { Fail 'Otomatik testler başarısız. Setup üretilmedi.' }
 
 $project = Join-Path $PSScriptRoot 'DogruTemin.Wpf\DogruTemin.Wpf.csproj'

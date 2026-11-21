@@ -1,3 +1,4 @@
+﻿using DogruTemin.Core.Modules.Records;
 using DogruTemin.Core.Models;
 using DogruTemin.Core.Services;
 

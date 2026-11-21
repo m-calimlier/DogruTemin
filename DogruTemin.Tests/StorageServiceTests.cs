@@ -1,4 +1,4 @@
-using DogruTemin.Core.Models;
+﻿using DogruTemin.Core.Models;
 using DogruTemin.Core.Services;
 
 namespace DogruTemin.Tests;
@@ -18,6 +18,7 @@ public class StorageServiceTests : IDisposable
         Assert.True(Directory.Exists(storage.RecordsFolder));
         Assert.True(Directory.Exists(storage.BackupFolder));
         Assert.True(Directory.Exists(storage.PdfFolder));
+        Assert.Equal(Path.Combine(root, "Çıktılar"), storage.PdfFolder);
         Assert.True(Directory.Exists(storage.LogFolder));
     }
 

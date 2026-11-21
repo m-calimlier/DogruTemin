@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -17,11 +17,11 @@ internal static class PanelReviewAcceptance
         Assert.IsType<Grid>(window.FindName("AppScaleViewbox"));
         Assert.Null(window.FindName("NavDataEntry"));
         Assert.Equal(Visibility.Visible, ((FrameworkElement)window.FindName("DataEntrySubmenu")).Visibility);
-        foreach (var view in new[] { "Home", "Institution", "General", "Firms", "ApprovalDocument", "Dates", "Output", "Control", "Statistics", "Archive", "Settings", "AboutSafety" })
+        foreach (var view in new[] { "Home", "Institution", "General", "Firms", "ApprovalDocument", "Dates", "Output", "Statistics", "Archive", "Settings", "AboutSafety" })
         foreach (var size in new[] { new Size(1024, 600), new Size(1366, 768) })
         {
-            typeof(MainWindow).GetMethod("ShowView", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(window, new object[] { view });
-            typeof(MainWindow).GetMethod("SynchronizeOutputSubpageWithCurrentView", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(window, null);
+            WorkspaceTestDriver.Invoke(window, "ShowView", new object[] { view });
+            WorkspaceTestDriver.Invoke(window, "SynchronizeOutputSubpageWithCurrentView", null);
             window.Width = size.Width; window.Height = size.Height;
             window.UpdateLayout();
             window.Dispatcher.Invoke(() => { }, System.Windows.Threading.DispatcherPriority.ApplicationIdle);

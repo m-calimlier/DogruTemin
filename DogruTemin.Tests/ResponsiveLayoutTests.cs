@@ -1,4 +1,4 @@
-using DogruTemin.Wpf;
+﻿using DogruTemin.Wpf;
 
 namespace DogruTemin.Tests;
 

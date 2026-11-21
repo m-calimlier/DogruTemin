@@ -1,0 +1,24 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    <!-- Kullanıcının seçtiği Atlas ayarları. Yalnız uygulama arayüzünde kullanılır. -->
+    <CornerRadius x:Key="AtlasCardRadius">15</CornerRadius>
+    <CornerRadius x:Key="AtlasHeaderRadius">14,14,0,0</CornerRadius>
+    <CornerRadius x:Key="AtlasFieldRadius">8</CornerRadius>
+    <Thickness x:Key="AtlasCardPadding">14</Thickness>
+    <Thickness x:Key="AtlasCardGap">0,0,0,10</Thickness>
+    <GridLength x:Key="AtlasSidebarWidth">170</GridLength>
+    <sys:Double x:Key="AtlasBodyFontSize">14</sys:Double>
+    <sys:Double x:Key="AtlasFieldHeight">36</sys:Double>
+    <sys:Double x:Key="AtlasHeaderHeight">44</sys:Double>
+    <sys:Double x:Key="AtlasRowHeight">36</sys:Double>
+    <sys:Double x:Key="AtlasValueFontSize">28</sys:Double>
+    <SolidColorBrush x:Key="AtlasAccentBrush" Color="#8FB9C2"/>
+    <SolidColorBrush x:Key="AtlasPanelBrush" Color="#13263E"/>
+    <SolidColorBrush x:Key="AtlasRaisedBrush" Color="#203852"/>
+    <SolidColorBrush x:Key="AtlasFieldBrush" Color="#0D1C30"/>
+    <SolidColorBrush x:Key="AtlasLineBrush" Color="#53667C"/>
+    <SolidColorBrush x:Key="AtlasAlternateRowBrush" Color="#192D45"/>
+    <SolidColorBrush x:Key="AtlasGoldBrush" Color="#DFBC70"/>
+    <DropShadowEffect x:Key="AtlasCardShadow" BlurRadius="10" ShadowDepth="2" Opacity="0.16" Color="Black"/>
+</ResourceDictionary>

@@ -1,0 +1,166 @@
+<?xml version='1.0' encoding='utf-8'?>
+<UserControl xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:local="clr-namespace:DogruTemin.Wpf" xmlns:models="clr-namespace:DogruTemin.Wpf.Models" xmlns:shell="clr-namespace:DogruTemin.Wpf.Features.Shell" x:Class="DogruTemin.Wpf.Features.Statistics.StatisticsPage">
+  <ScrollViewer x:Name="StatisticsView" Visibility="Collapsed" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+    <StackPanel>
+      <Grid Margin="0,0,0,14">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <StackPanel>
+          <TextBlock Text="İSTATİSTİKLER / YÖNETİM PANELİ" Style="{StaticResource PageTitle}"/>
+          <TextBlock Text="Kaydedilmiş doğrudan temin işlemlerinin yıllık finansal ve operasyonel özeti." Style="{StaticResource PageSubtitle}" Margin="2,2,0,0"/>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,10,0,0">
+          <TextBlock Text="Rapor Yılı" Style="{StaticResource PremiumFieldLabel}" Margin="0,0,10,0"/>
+          <ComboBox x:Name="StatisticsYearBox" Style="{StaticResource PremiumFieldComboBox}" Width="135" ItemsSource="{Binding StatisticsYears}" SelectionChanged="StatisticsYear_SelectionChanged"/>
+          <Button Style="{StaticResource ModernButton}" Content="YENİLE" Width="86" Height="42" Padding="10,8" Margin="8,0,0,0" Click="RefreshStatistics_Click"/>
+          <Button Style="{StaticResource ModernButton}" Content="PDF RAPORU" Width="126" Height="42" Padding="10,8" Margin="8,0,0,0" Background="#354C65" Click="ExportStatisticsPdf_Click"/>
+          <Button Style="{StaticResource ModernButton}" Content="EXCEL RAPORU" Width="140" Height="42" Padding="10,8" Margin="8,0,0,0" Background="#248A50" Click="ExportStatisticsExcel_Click"/>
+        </StackPanel>
+      </Grid>
+      <Border Style="{StaticResource WorkspaceNote}" Padding="14,9" Margin="0,0,0,12">
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="Auto"/>
+          </Grid.ColumnDefinitions>
+          <TextBlock Text="Harcama Belgesi Tarihi rapor yılı olarak esas alınır. Finansal göstergeler yalnız kaydedilmiş arşiv kayıtlarından hesaplanır." Foreground="{StaticResource PremiumMutedTextBrush}" FontSize="12.5" TextWrapping="Wrap"/>
+          <TextBlock x:Name="StatisticsExcludedText" Grid.Column="1" Text="" Foreground="#9A6512" FontSize="12.5" FontWeight="SemiBold" Margin="20,0,0,0" VerticalAlignment="Center"/>
+        </Grid>
+      </Border>
+      <UniformGrid Columns="5" Margin="0,0,0,12">
+        <HeaderedContentControl Margin="0,0,7,0" Header="İŞLEM SAYISI" Tag="{StaticResource InsetLedgerIcon}" Style="{StaticResource CalculationOverviewCard}">
+          <StackPanel>
+            <Border Style="{StaticResource OverviewWell}">
+              <Viewbox StretchDirection="DownOnly">
+                <TextBlock x:Name="StatisticsOperationCountText" Text="0" Foreground="#F4F6FB" FontSize="19" FontWeight="Bold"/>
+              </Viewbox>
+            </Border>
+            <TextBlock Text="rapora dahil" Foreground="{StaticResource PremiumMutedTextBrush}" FontSize="11.5" Margin="2,4,0,0"/>
+          </StackPanel>
+        </HeaderedContentControl>
+        <HeaderedContentControl Margin="3,0,5,0" Header="YAKLAŞIK MALİYET" Tag="{StaticResource MetricCoins}" Style="{StaticResource CalculationOverviewCard}">
+          <StackPanel>
+            <Border Style="{StaticResource OverviewWell}">
+              <Viewbox StretchDirection="DownOnly">
+                <TextBlock x:Name="StatisticsApproximateText" Text="—" Foreground="#F4F6FB" FontSize="19" FontWeight="Bold" TextTrimming="CharacterEllipsis"/>
+              </Viewbox>
+            </Border>
+            <TextBlock Text="KDV hariç toplam" Foreground="{StaticResource PremiumMutedTextBrush}" FontSize="11.5" Margin="2,4,0,0"/>
+          </StackPanel>
+        </HeaderedContentControl>
+        <HeaderedContentControl Margin="5,0,3,0" Header="NİHAİ TOPLAM" Tag="{StaticResource MetricTransfer}" Style="{StaticResource CalculationOverviewCard}">
+          <StackPanel>
+            <Border Style="{StaticResource OverviewWell}">
+              <Viewbox StretchDirection="DownOnly">
+                <TextBlock x:Name="StatisticsFinalText" Text="—" Foreground="#F4F6FB" FontSize="19" FontWeight="Bold" TextTrimming="CharacterEllipsis"/>
+              </Viewbox>
+            </Border>
+            <TextBlock Text="kazanan teklifler" Foreground="{StaticResource PremiumMutedTextBrush}" FontSize="11.5" Margin="2,4,0,0"/>
+          </StackPanel>
+        </HeaderedContentControl>
+        <HeaderedContentControl Margin="5,0,3,0" Header="TOPLAM TASARRUF" Tag="{StaticResource MetricShield}" Style="{StaticResource CalculationOverviewCard}">
+          <StackPanel>
+            <Border Style="{StaticResource OverviewWell}">
+              <Viewbox StretchDirection="DownOnly">
+                <TextBlock x:Name="StatisticsSavingsText" Text="—" Foreground="#F4F6FB" FontSize="19" FontWeight="Bold" TextTrimming="CharacterEllipsis"/>
+              </Viewbox>
+            </Border>
+            <TextBlock x:Name="StatisticsSavingsRateText" Text="%0,00" Foreground="{StaticResource PremiumMutedTextBrush}" FontSize="11.5" Margin="2,4,0,0"/>
+          </StackPanel>
+        </HeaderedContentControl>
+        <HeaderedContentControl Margin="7,0,0,0" Header="ORTALAMA İŞLEM" Tag="{StaticResource MetricBank}" Style="{StaticResource CalculationOverviewCard}">
+          <StackPanel>
+            <Border Style="{StaticResource OverviewWell}">
+              <Viewbox StretchDirection="DownOnly">
+                <TextBlock x:Name="StatisticsAverageText" Text="—" Foreground="#F4F6FB" FontSize="19" FontWeight="Bold" TextTrimming="CharacterEllipsis"/>
+              </Viewbox>
+            </Border>
+            <TextBlock Text="nihai tutar / işlem" Foreground="{StaticResource PremiumMutedTextBrush}" FontSize="11.5" Margin="2,4,0,0"/>
+          </StackPanel>
+        </HeaderedContentControl>
+      </UniformGrid>
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="1.1*"/>
+          <ColumnDefinition Width="20"/>
+          <ColumnDefinition Width="0.9*"/>
+        </Grid.ColumnDefinitions>
+        <Border Grid.Column="0" Style="{StaticResource PremiumPanel}" Padding="16" MinHeight="305">
+          <StackPanel>
+            <Grid Margin="0,0,0,12">
+              <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+              </Grid.RowDefinitions>
+              <DockPanel>
+                <Border DockPanel.Dock="Left" Style="{StaticResource InsetCardPlate}" Width="30" Height="30" Margin="0,0,8,0">
+                  <Image Source="{StaticResource InsetLedgerIcon}" Width="18" Height="18"/>
+                </Border>
+                <TextBlock Text="AYLIK İŞLEM DAĞILIMI" Style="{StaticResource PremiumSectionTitle}"/>
+              </DockPanel>
+              <TextBlock x:Name="StatisticsMonthlyHintText" Text="İşlem sayısı ve nihai toplam" HorizontalAlignment="Left" Foreground="{StaticResource PremiumMutedTextBrush}" FontSize="11.5" Grid.Row="1" Margin="0,5,0,0" TextWrapping="Wrap"/>
+            </Grid>
+            <StackPanel xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+              <Viewbox Height="380" MaxWidth="460" Stretch="Uniform" HorizontalAlignment="Center">
+                <Grid Width="460" Height="380">
+                  <Canvas x:Name="StatisticsDonutChart" Width="328" Height="328" Panel.ZIndex="2" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                  <Canvas x:Name="StatisticsDonutLabelsCanvas" Width="460" Height="380" Panel.ZIndex="3" IsHitTestVisible="False"/>
+                  <Border Width="144" Height="144" Background="#23374E" BorderBrush="#96743A" BorderThickness="1" CornerRadius="72" Panel.ZIndex="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                      <TextBlock Text="Toplam İşlem" Foreground="#E8C778" FontSize="13" FontWeight="Bold" HorizontalAlignment="Center"/>
+                      <TextBlock x:Name="StatisticsDonutTotalText" Text="0" Foreground="#E8C778" FontSize="20" FontWeight="Bold" TextAlignment="Center" Margin="0,6,0,0"/>
+                    </StackPanel>
+                  </Border>
+                </Grid>
+              </Viewbox>
+              <WrapPanel x:Name="StatisticsDonutLegendPanel" Margin="0,12,0,0"/>
+              <TextBlock x:Name="StatisticsDonutEmptyState" Text="Dağılım verisi yok" Foreground="#E8C778" FontSize="15" TextAlignment="Center" Visibility="Collapsed"/>
+            </StackPanel>
+          </StackPanel>
+        </Border>
+        <Border Grid.Column="2" Style="{StaticResource PremiumPanel}" Padding="16" MinHeight="305">
+          <StackPanel>
+            <Grid Margin="0,0,0,10">
+              <DockPanel>
+                <Border DockPanel.Dock="Left" Style="{StaticResource InsetCardPlate}" Width="30" Height="30" Margin="0,0,8,0">
+                  <Image Source="{StaticResource MetricCoins}" Width="18" Height="18"/>
+                </Border>
+                <TextBlock Text="İŞLEM ÖZETİ" Style="{StaticResource PremiumSectionTitle}"/>
+              </DockPanel>
+              <TextBlock Text="Nihai tutara göre" HorizontalAlignment="Right" Foreground="{StaticResource PremiumMutedTextBrush}" FontSize="11.5"/>
+            </Grid>
+            <DataGrid x:Name="StatisticsGrid" Style="{StaticResource PremiumDataGrid}" ItemsSource="{Binding StatisticsOperations}" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" RowHeight="{StaticResource AtlasRowHeight}" MaxHeight="222" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+              <DataGrid.Columns>
+                <DataGridTextColumn Header="İŞLEM" Binding="{Binding JobTitle}" Width="*"/>
+                <DataGridTextColumn Header="TARİH" Binding="{Binding DateText}" Width="90"/>
+                <DataGridTextColumn Header="NİHAİ" Binding="{Binding FinalText}" Width="118"/>
+                <DataGridTextColumn Header="FARK" Binding="{Binding SavingsText}" Width="105"/>
+              </DataGrid.Columns>
+            </DataGrid>
+            <Grid Margin="0,10,0,0">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="20"/>
+                <ColumnDefinition/>
+              </Grid.ColumnDefinitions>
+              <Border Background="#111F36" BorderBrush="#617C99" BorderThickness="1" CornerRadius="8" Padding="10,7">
+                <StackPanel>
+                  <TextBlock Text="EN YÜKSEK" Foreground="#AFC5D8" FontSize="10.5" FontWeight="Bold"/>
+                  <TextBlock x:Name="StatisticsHighestText" Text="—" Foreground="White" FontSize="11.5" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                </StackPanel>
+              </Border>
+              <Border Grid.Column="2" Background="#111F36" BorderBrush="#617C99" BorderThickness="1" CornerRadius="8" Padding="10,7">
+                <StackPanel>
+                  <TextBlock Text="EN DÜŞÜK" Foreground="#AFC5D8" FontSize="10.5" FontWeight="Bold"/>
+                  <TextBlock x:Name="StatisticsLowestText" Text="—" Foreground="White" FontSize="11.5" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                </StackPanel>
+              </Border>
+            </Grid>
+          </StackPanel>
+        </Border>
+      </Grid>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

@@ -1,0 +1,26 @@
+{
+  "program": "DoğruTemin",
+  "tasarim": "Atlas",
+  "ayarlar": {
+    "atlas.radius": 15,
+    "atlas.gap": 10,
+    "atlas.padding": 14,
+    "atlas.fontSize": 14,
+    "atlas.sidebar": 170,
+    "atlas.accent": "#8fb9c2",
+    "atlas.border": 40,
+    "atlas.shadow": 10,
+    "atlas.valueSize": 28,
+    "atlas.align": "Sol",
+    "atlas.meta": true,
+    "atlas.headerGap": 10,
+    "atlas.fieldHeight": 36,
+    "atlas.header": 44,
+    "atlas.rowHeight": 36,
+    "atlas.labels": "Üstte",
+    "atlas.help": true,
+    "atlas.zebra": true,
+    "atlas.grid": true,
+    "atlas.spec": true
+  }
+}

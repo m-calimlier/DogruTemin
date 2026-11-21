@@ -1,0 +1,129 @@
+<?xml version='1.0' encoding='utf-8'?>
+<UserControl xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:local="clr-namespace:DogruTemin.Wpf" xmlns:models="clr-namespace:DogruTemin.Wpf.Models" xmlns:shell="clr-namespace:DogruTemin.Wpf.Features.Shell" x:Class="DogruTemin.Wpf.Features.Institution.InstitutionPage">
+  <ScrollViewer x:Name="InstitutionView" Visibility="Collapsed" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+    <StackPanel Margin="0,0,8,12">
+      <TextBlock Text="KURUM BİLGİSİ" Style="{StaticResource PageTitle}"/>
+      <TextBlock Text="Kurum kimliği, iletişim, harcama yetkilisi ve aktif işlemin komisyon bilgilerini yönetin." Style="{StaticResource PageSubtitle}" Margin="2,0,0,10"/>
+      <Border Padding="0" Margin="0,0,0,20">
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="20"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="20"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="20"/>
+            <ColumnDefinition Width="*"/>
+          </Grid.ColumnDefinitions>
+          <HeaderedContentControl Header="KURUM KİMLİĞİ" Tag="{StaticResource MetricBank}" Style="{StaticResource InsetFormCard}">
+            <StackPanel>
+              <TextBlock Text="Üst Makam" Style="{StaticResource PremiumFieldLabel}"/>
+              <TextBox x:Name="InstitutionTopAuthorityBox" Style="{StaticResource PremiumFieldTextBox}" TextChanged="AnyGlobalField_TextChanged"/>
+              <TextBlock Text="İdarenin Tam Adı" Style="{StaticResource PremiumFieldLabel}" Margin="0,6,0,4"/>
+              <TextBox x:Name="InstitutionFullNameBox" Style="{StaticResource PremiumFieldTextBox}" TextChanged="AnyGlobalField_TextChanged"/>
+              <TextBlock Text="İl" Style="{StaticResource PremiumFieldLabel}" Margin="0,6,0,4"/>
+              <TextBox x:Name="InstitutionProvinceBox" Style="{StaticResource PremiumFieldTextBox}" TextChanged="AnyGlobalField_TextChanged"/>
+            </StackPanel>
+          </HeaderedContentControl>
+          <HeaderedContentControl Header="İLETİŞİM" Tag="{StaticResource MetricAccrual}" Style="{StaticResource InsetFormCard}" Grid.Column="2">
+            <StackPanel>
+              <TextBlock Text="Adres" Style="{StaticResource PremiumFieldLabel}"/>
+              <TextBox x:Name="InstitutionAddressBox" Style="{StaticResource PremiumFieldTextBox}" VerticalContentAlignment="Center" TextChanged="AnyGlobalField_TextChanged"/>
+              <TextBlock Text="Telefon" Style="{StaticResource PremiumFieldLabel}" Margin="0,6,0,4"/>
+              <TextBox x:Name="InstitutionPhoneBox" Style="{StaticResource PremiumFieldTextBox}" TextChanged="AnyGlobalField_TextChanged"/>
+              <TextBlock Text="E-posta" Style="{StaticResource PremiumFieldLabel}" Margin="0,6,0,4"/>
+              <TextBox x:Name="InstitutionEmailBox" Style="{StaticResource PremiumFieldTextBox}" TextChanged="AnyGlobalField_TextChanged"/>
+            </StackPanel>
+          </HeaderedContentControl>
+          <HeaderedContentControl Header="HARCAMA YETKİLİSİ" Tag="{StaticResource InsetTeacherIcon}" Style="{StaticResource InsetFormCard}" Grid.Column="4">
+            <StackPanel>
+              <TextBlock Text="Ad Soyad" Style="{StaticResource PremiumFieldLabel}"/>
+              <TextBox x:Name="AuthorizedNameBox" Style="{StaticResource PremiumFieldTextBox}" TextChanged="AnyGlobalField_TextChanged"/>
+              <TextBlock Text="Görevi" Style="{StaticResource PremiumFieldLabel}" Margin="0,6,0,4"/>
+              <TextBox x:Name="AuthorizedDutyBox" Style="{StaticResource PremiumFieldTextBox}" TextChanged="AnyGlobalField_TextChanged"/>
+              <TextBlock Text="Unvanı" Style="{StaticResource PremiumFieldLabel}" Margin="0,6,0,4"/>
+              <TextBox x:Name="AuthorizedTitleBox" Style="{StaticResource PremiumFieldTextBox}" TextChanged="AnyGlobalField_TextChanged"/>
+            </StackPanel>
+          </HeaderedContentControl>
+          <HeaderedContentControl Header="ONAYA SUNAN" Tag="{StaticResource InsetTeacherIcon}" Style="{StaticResource InsetFormCard}" Margin="0" Grid.Column="6">
+            <StackPanel>
+              <StackPanel Margin="0,0,0,10">
+                <TextBlock Text="Ad Soyad *" Style="{StaticResource PremiumFieldLabel}"/>
+                <TextBox x:Name="ApprovalSubmittedByNameBox" Style="{StaticResource PremiumFieldTextBox}" TextChanged="AnyGlobalField_TextChanged"/>
+              </StackPanel>
+              <StackPanel Margin="0,0,0,10">
+                <TextBlock Text="Unvanı *" Style="{StaticResource PremiumFieldLabel}"/>
+                <TextBox x:Name="ApprovalSubmittedByTitleBox" Style="{StaticResource PremiumFieldTextBox}" TextChanged="AnyGlobalField_TextChanged"/>
+              </StackPanel>
+            </StackPanel>
+          </HeaderedContentControl>
+        </Grid>
+      </Border>
+      <Border x:Name="CommissionSectionAnchor" Style="{StaticResource PremiumPanel}" Padding="16" Margin="0,0,0,10">
+        <StackPanel>
+          <DockPanel Margin="0,0,0,3">
+            <Border DockPanel.Dock="Left" Style="{StaticResource InsetCardPlate}" Width="30" Height="30" Margin="0,0,8,0">
+              <Image Source="{StaticResource InsetTeacherIcon}" Width="18" Height="18"/>
+            </Border>
+            <TextBlock Text="AKTİF İŞLEM KOMİSYONLARI" Style="{StaticResource PremiumSectionTitle}" FontSize="16" Foreground="{StaticResource Gold500Brush}"/>
+          </DockPanel>
+          <TextBlock Text="Bu bilgiler yalnız aktif işleme aittir. Varsayılan komisyon şablonu kullanılmaz." Foreground="{StaticResource PremiumMutedTextBrush}" FontSize="12.5" Margin="0,0,0,9"/>
+          <StackPanel Margin="0,0,0,12">
+            <Grid MaxWidth="600" HorizontalAlignment="Left">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="225"/>
+                <ColumnDefinition/>
+              </Grid.ColumnDefinitions>
+              <TextBlock Text="Komisyon Onay Sayısı" Style="{StaticResource PremiumFieldLabel}" Margin="0"/>
+              <TextBox x:Name="AssignmentNoBox" Grid.Column="1" Style="{StaticResource PremiumFieldTextBox}" TextChanged="AnyGlobalField_TextChanged"/>
+            </Grid>
+          </StackPanel>
+          <Grid>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition/>
+              <ColumnDefinition Width="20"/>
+              <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <StackPanel>
+              <TextBlock Text="MUAYENE VE KABUL KOMİSYONU" Style="{StaticResource PremiumSectionTitle}" FontSize="13.5" Margin="2,0,0,5"/>
+              <DataGrid x:Name="InspectionCommissionGrid" Style="{StaticResource PremiumDataGrid}" ItemsSource="{Binding InspectionCommission}" AutoGenerateColumns="False" RowHeight="{StaticResource AtlasRowHeight}" Height="188" ScrollViewer.VerticalScrollBarVisibility="Disabled" ScrollViewer.HorizontalScrollBarVisibility="Disabled" CellEditEnding="CommissionGrid_CellEditEnding">
+                <DataGrid.Columns>
+                  <DataGridTextColumn Header="#" Binding="{Binding No}" Width="44" IsReadOnly="True" ElementStyle="{StaticResource PremiumGridCellText}"/>
+                  <DataGridTextColumn Header="Adı Soyadı" Binding="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" Width="1.45*" ElementStyle="{StaticResource PremiumGridCellText}" EditingElementStyle="{StaticResource PremiumGridCellEditTextBox}"/>
+                  <DataGridTemplateColumn Header="Ünvanı / Görevi" Width="1.15*">
+                    <DataGridTemplateColumn.CellTemplate>
+                      <DataTemplate>
+                        <ComboBox ItemsSource="{Binding DataContext.CommissionTitles, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" SelectedItem="{Binding Title, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource PremiumFieldComboBox}" VerticalAlignment="Center" SelectionChanged="CommissionTitle_SelectionChanged"/>
+                      </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                  </DataGridTemplateColumn>
+                </DataGrid.Columns>
+              </DataGrid>
+            </StackPanel>
+            <StackPanel Grid.Column="2">
+              <TextBlock Text="PİYASA FİYAT ARAŞTIRMASI KOMİSYONU" Style="{StaticResource PremiumSectionTitle}" FontSize="13.5" Margin="2,0,0,5"/>
+              <DataGrid x:Name="MarketCommissionGrid" Style="{StaticResource PremiumDataGrid}" ItemsSource="{Binding MarketCommission}" AutoGenerateColumns="False" RowHeight="{StaticResource AtlasRowHeight}" Height="188" ScrollViewer.VerticalScrollBarVisibility="Disabled" ScrollViewer.HorizontalScrollBarVisibility="Disabled" CellEditEnding="CommissionGrid_CellEditEnding">
+                <DataGrid.Columns>
+                  <DataGridTextColumn Header="#" Binding="{Binding No}" Width="44" IsReadOnly="True" ElementStyle="{StaticResource PremiumGridCellText}"/>
+                  <DataGridTextColumn Header="Adı Soyadı" Binding="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" Width="1.45*" ElementStyle="{StaticResource PremiumGridCellText}" EditingElementStyle="{StaticResource PremiumGridCellEditTextBox}"/>
+                  <DataGridTemplateColumn Header="Ünvanı / Görevi" Width="1.15*">
+                    <DataGridTemplateColumn.CellTemplate>
+                      <DataTemplate>
+                        <ComboBox ItemsSource="{Binding DataContext.CommissionTitles, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" SelectedItem="{Binding Title, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource PremiumFieldComboBox}" VerticalAlignment="Center" SelectionChanged="CommissionTitle_SelectionChanged"/>
+                      </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                  </DataGridTemplateColumn>
+                </DataGrid.Columns>
+              </DataGrid>
+            </StackPanel>
+          </Grid>
+        </StackPanel>
+      </Border>
+      <Border Style="{StaticResource WorkspaceNote}">
+        <Grid>
+          <Button HorizontalAlignment="Right" Style="{StaticResource WorkspaceAction}" Content="KURUM BİLGİSİNİ KAYDET" MinWidth="240" Height="40" Padding="16,6" FontSize="13" Click="SaveApplicationSettings_Click"/>
+        </Grid>
+      </Border>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

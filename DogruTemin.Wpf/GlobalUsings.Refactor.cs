@@ -1,1 +1,1 @@
-global using DogruTemin.Wpf.Services;
+﻿global using DogruTemin.Wpf.Services;

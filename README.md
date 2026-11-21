@@ -1,8 +1,10 @@
-﻿# DoğruTemin 4.4.1
+﻿# DoğruTemin 4.5.0
 
 DoğruTemin; doğrudan temin süreçlerinin hazırlanması, firma tekliflerinin karşılaştırılması, belge üretimi, arşiv ve veri güvenliği için geliştirilmiş .NET 8 / WPF Windows masaüstü uygulamasıdır.
 
-## 4.4.1
+## 4.5.0
+
+Atlas arayüzü, dokuz modüle ayrılmış mimari ve canlı PDF önizlemeleri. Ayrıntılar: [Sürüm notları](RELEASE_NOTES_4.5.0.md).
 
 - Mal/hizmet, firma ve teklif yönetimi
 - Yaklaşık maliyet ve nihai teklif değerlendirme motoru
@@ -23,4 +25,6 @@ Yeni veri kökü `Masaüstü\DoğruTemin` klasörüdür. Eski `Belgeler\DoğruTe
 
 ## Geliştirme ve kalite
 
-Merkezi sürüm bilgisi `Directory.Build.props` dosyasındadır. Compiler warning'leri build kapısıdır; .NET analizörleri ve code-style denetimi aktiftir. 4.4.1 imzasız dağıtım istisnası ve imza politikası için `CODE_SIGNING.md` dosyasına bakın. Yeni Setup üretmek için `exe_olustur\EXE_OLUSTUR.bat` dosyasını çalıştırın.
+Ekranlar ve uygulama işleyişi dokuz sorumluluk modülüne ayrılmıştır. Modül haritası, olay yönlendirme, PDF şablonları ve geliştirme kuralları için [Mimari ve geliştirme rehberine](docs/ARCHITECTURE.md) bakın.
+
+Merkezi sürüm bilgisi `Directory.Build.props` dosyasındadır. Compiler warning'leri build kapısıdır; .NET analizörleri ve code-style denetimi aktiftir. 4.5.0 imzasız dağıtım istisnası ve imza politikası için `CODE_SIGNING.md` dosyasına bakın. Yeni Setup üretmek için `exe_olustur\EXE_OLUSTUR.bat` dosyasını çalıştırın.

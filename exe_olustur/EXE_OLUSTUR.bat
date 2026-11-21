@@ -4,7 +4,7 @@ setlocal
 set "REPO_ROOT=%~dp0.."
 set "OUTPUT_ROOT=%~dp0DAGITIM"
 
-echo DogruTemin 4.4.1 imzasiz Setup olusturuluyor...
+echo DogruTemin 4.5.0 imzasiz Setup olusturuluyor...
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%REPO_ROOT%\SETUP_HAZIRLA.ps1" -AllowUnsignedFinal -OutputRoot "%OUTPUT_ROOT%"
 set "EXITCODE=%ERRORLEVEL%"
 

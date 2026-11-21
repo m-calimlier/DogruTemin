@@ -24,11 +24,7 @@
     <!-- PDFsharp's transitive 8.0.1 is affected by CVE-2026-84008 / CVE-2026-70162. -->
     <PackageReference Include="System.Security.Cryptography.Pkcs" Version="8.0.2" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="MainWindow.xaml.cs" />
-    <None Include="MainWindow.xaml.cs" />
-  </ItemGroup>
-  <ItemGroup>
+<ItemGroup>
     <ProjectReference Include="..\DogruTemin.Core\DogruTemin.Core.csproj" />
   </ItemGroup>
 </Project>

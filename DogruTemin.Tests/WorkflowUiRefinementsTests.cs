@@ -1,4 +1,4 @@
-using System.Xml.Linq;
+﻿using System.Xml.Linq;
 using DogruTemin.Core.Models;
 
 namespace DogruTemin.Tests;
@@ -8,10 +8,10 @@ public sealed class WorkflowUiRefinementsTests
     [Fact]
     public void FirmPhoneConversionsUseOneFixedNationalZero()
     {
-        Assert.Equal("3121234567", global::DogruTemin.Wpf.MainWindow.PhoneForEntry("03121234567"));
-        Assert.Equal("03121234567", global::DogruTemin.Wpf.MainWindow.PhoneForStorage("3121234567"));
-        Assert.Equal(string.Empty, global::DogruTemin.Wpf.MainWindow.PhoneForStorage(""));
-        Assert.Equal("3121234567", global::DogruTemin.Wpf.MainWindow.PhoneForEntry(global::DogruTemin.Wpf.MainWindow.PhoneForStorage("3121234567")));
+        Assert.Equal("3121234567", global::DogruTemin.Wpf.Features.Catalog.CatalogModule.PhoneForEntry("03121234567"));
+        Assert.Equal("03121234567", global::DogruTemin.Wpf.Features.Catalog.CatalogModule.PhoneForStorage("3121234567"));
+        Assert.Equal(string.Empty, global::DogruTemin.Wpf.Features.Catalog.CatalogModule.PhoneForStorage(""));
+        Assert.Equal("3121234567", global::DogruTemin.Wpf.Features.Catalog.CatalogModule.PhoneForEntry(global::DogruTemin.Wpf.Features.Catalog.CatalogModule.PhoneForStorage("3121234567")));
     }
 
     [Theory]
@@ -23,10 +23,10 @@ public sealed class WorkflowUiRefinementsTests
     [InlineData("abcdefghij", false)]
     [InlineData("03121234567", false)]
     public void FirmPhoneEntryRequiresExactlyTenDigitsWhenPresent(string input, bool expected) =>
-        Assert.Equal(expected, global::DogruTemin.Wpf.MainWindow.IsValidPhoneEntry(input));
+        Assert.Equal(expected, global::DogruTemin.Wpf.Features.Catalog.CatalogModule.IsValidPhoneEntry(input));
 
     [Fact]
-    public void CommissionApprovalFieldsLiveInInstitutionViewAndKeepTheirNames()
+    public void CommissionApprovalDateMovesToDatesWhileNumberStaysWithCommission()
     {
         var document = LoadMainWindowXaml();
         XNamespace x = "http://schemas.microsoft.com/winfx/2006/xaml";
@@ -36,7 +36,8 @@ public sealed class WorkflowUiRefinementsTests
         Assert.Equal(2, fields.Length);
         foreach (var field in fields)
         {
-            Assert.Contains(field.Ancestors(), ancestor => (string?)ancestor.Attribute(x + "Name") == "InstitutionView");
+            var view = (string?)field.Attribute(x + "Name") == "AssignmentDatePicker" ? "DatesView" : "InstitutionView";
+            Assert.Contains(field.Ancestors(), ancestor => (string?)ancestor.Attribute(x + "Name") == view);
             Assert.DoesNotContain(field.Ancestors(), ancestor => (string?)ancestor.Attribute(x + "Name") == "GeneralView");
         }
 
@@ -80,27 +81,23 @@ public sealed class WorkflowUiRefinementsTests
             MarketReportDate = new DateTime(2026, 1, 4),
             InspectionReportDate = new DateTime(2026, 1, 4)
         };
-        Assert.Empty(global::DogruTemin.Wpf.MainWindow.GetDateSaveBlockingIssues(valid));
-        Assert.Empty(global::DogruTemin.Wpf.MainWindow.GetDateSaveBlockingIssues(new ProcessDates()));
+        Assert.Empty(global::DogruTemin.Wpf.Features.Documents.DocumentsModule.GetDateSaveBlockingIssues(valid));
+        Assert.Empty(global::DogruTemin.Wpf.Features.Documents.DocumentsModule.GetDateSaveBlockingIssues(new ProcessDates()));
 
         valid.ApprovalDocumentDate = valid.CostCalculationDate;
-        Assert.NotEmpty(global::DogruTemin.Wpf.MainWindow.GetDateSaveBlockingIssues(valid));
+        Assert.NotEmpty(global::DogruTemin.Wpf.Features.Documents.DocumentsModule.GetDateSaveBlockingIssues(valid));
     }
 
     [Fact]
-    public void AllOutputDocumentsAreSeededSelected()
+    public void OutputGroupsContainAllSixDocumentsWithoutSelection()
     {
-        var directory = FindRepositoryRoot();
-        var shell = File.ReadAllText(Path.Combine(directory, "DogruTemin.Wpf", "MainWindow.Shell.cs"));
-        var seed = shell[(shell.IndexOf("private void SeedOutputDocuments", StringComparison.Ordinal))..];
-        var initialSelections = System.Text.RegularExpressions.Regex.Matches(seed, "IsSelected\\s*=\\s*true");
-        Assert.Equal(6, initialSelections.Count);
+        Assert.Equal(2, global::DogruTemin.Wpf.Services.SavedDocumentService.PreparationDocumentTypes.Count);
+        Assert.Equal(4, global::DogruTemin.Wpf.Services.SavedDocumentService.FinalDocumentTypes.Count);
     }
-
     [Fact]
     public void ComboBoxToggleCoversTheWholeControlSurface()
     {
-        var app = XDocument.Load(Path.Combine(FindRepositoryRoot(), "DogruTemin.Wpf", "App.xaml"));
+        var app = XDocument.Load(Path.Combine(FindRepositoryRoot(), "DogruTemin.Wpf", "Features", "Shell", "Themes", "ApplicationTheme.xaml"));
         XNamespace x = "http://schemas.microsoft.com/winfx/2006/xaml";
         var toggle = app.Descendants().Single(element => (string?)element.Attribute(x + "Name") == "DropDownToggle");
         Assert.Equal("Stretch", (string?)toggle.Attribute("HorizontalAlignment"));
@@ -132,18 +129,24 @@ public sealed class WorkflowUiRefinementsTests
     }
 
     [Fact]
-    public void OutputCardsHaveMoreVerticalRoomAndReadableText()
+    public void OutputGroupsHaveTwoPdfActionsAndNoSelectionOrStatusCard()
     {
         var document = LoadMainWindowXaml();
-        var cardGrid = document.Descendants().Single(element => (string?)element.Attribute("MinHeight") == "390");
-        Assert.Equal("390", (string?)cardGrid.Attribute("MinHeight"));
+        XNamespace x = "http://schemas.microsoft.com/winfx/2006/xaml";
+        var output = document.Descendants().Single(element => (string?)element.Attribute(x + "Name") == "OutputView");
+        Assert.Equal(2, output.Descendants().Count(element => (string?)element.Attribute("Click") == "OutputGroupPdf_Click"));
+        Assert.DoesNotContain(output.Descendants(), element => element.Name.LocalName == "CheckBox");
+        Assert.DoesNotContain(output.Descendants(), element => (string?)element.Attribute(x + "Name") == "OutputReadinessBar");
         Assert.Equal("Auto", (string?)document.Descendants().Single(element => (string?)element.Attribute("{http://schemas.microsoft.com/winfx/2006/xaml}Name") == "DocumentsDatesView").Attribute("VerticalScrollBarVisibility"));
     }
 
     private static XDocument LoadMainWindowXaml()
     {
         var root = FindRepositoryRoot();
-        return XDocument.Load(Path.Combine(root, "DogruTemin.Wpf", "MainWindow.xaml"));
+        var shell = XDocument.Load(Path.Combine(root, "DogruTemin.Wpf", "MainWindow.xaml"));
+        foreach (var page in Directory.GetFiles(Path.Combine(root, "DogruTemin.Wpf", "Features"), "*Page.xaml", SearchOption.AllDirectories))
+            shell.Root!.Add(XDocument.Load(page).Root!.Elements().Select(element => new XElement(element)));
+        return shell;
     }
 
     private static string FindRepositoryRoot()

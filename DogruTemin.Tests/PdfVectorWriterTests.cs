@@ -1,4 +1,4 @@
-using System.Text;
+﻿using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,7 +11,7 @@ namespace DogruTemin.Tests;
 public class PdfVectorWriterTests
 {
     [Fact]
-    public void OverflowIsReportedAndExistingPdfIsPreserved()
+    public void LongTextIsAutomaticallyReducedAndPreservedInPdf()
     {
         RunSta(() =>
         {
@@ -24,12 +24,12 @@ public class PdfVectorWriterTests
             var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".pdf");
             try
             {
-                File.WriteAllText(path, "önceki belge");
-                var failure = Record.Exception(() => PdfVectorWriter.Save(document, path));
-                Assert.True(failure is InvalidOperationException, $"Failure={failure}; child={page.Children[0].Visibility}; Actual={((FrameworkElement)page.Children[0]).ActualWidth}x{((FrameworkElement)page.Children[0]).ActualHeight}; VisualChildren={System.Windows.Media.VisualTreeHelper.GetChildrenCount(page)}");
-                var error = (InvalidOperationException)failure!;
-                Assert.Contains("sığmıyor", error.Message, StringComparison.OrdinalIgnoreCase);
-                Assert.Equal("önceki belge", File.ReadAllText(path));
+                PdfVectorWriter.Save(document, path);
+                using var pdf = UglyToad.PdfPig.PdfDocument.Open(path);
+                var text = string.Concat(pdf.GetPages().Select(p => p.Text));
+                Assert.Equal(100, text.Count(character => character == 'Ş'));
+                Assert.True(((TextBlock)page.Children[0]).FontSize < 14);
+                Assert.Equal(1, pdf.NumberOfPages);
             }
             finally { File.Delete(path); }
         });
@@ -99,7 +99,7 @@ public class PdfVectorWriterTests
             var path = Path.Combine(Path.GetTempPath(), $"DogruTemin_CompatPdf_{Guid.NewGuid():N}.pdf");
             try
             {
-                PdfImageWriter.Save(document, path);
+                PdfVectorWriter.Save(document, path);
                 var ascii = Encoding.ASCII.GetString(File.ReadAllBytes(path));
                 Assert.DoesNotContain("/Subtype /Image", ascii, StringComparison.Ordinal);
                 Assert.Contains("/Font", ascii, StringComparison.Ordinal);
