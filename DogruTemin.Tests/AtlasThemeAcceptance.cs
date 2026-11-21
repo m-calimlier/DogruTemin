@@ -18,11 +18,23 @@ internal static class AtlasThemeAcceptance
   Assert.Equal(DataGridGridLinesVisibility.All, products.GridLinesVisibility);
   Assert.Equal(2, products.AlternationCount);
   WorkspaceTestDriver.Invoke(window,"ShowView",new object[]{"General"});
-  window.Width=1920; window.Height=1080; window.UpdateLayout();
   var editor=(FrameworkElement)window.FindName("AtlasProductEditor");
   var list=(FrameworkElement)window.FindName("AtlasProductList");
-  Assert.True(list.TranslatePoint(new Point(),window).X > editor.TranslatePoint(new Point(),window).X + editor.ActualWidth,
-    "Atlas geniÅŸ ekranda giriÅŸ kartÄ± ve tabloyu yan yana gÃ¶stermeli.");
+  foreach (var width in new[] { 1024d, 1920d })
+  {
+   window.Width=width; window.Height=1080;
+   window.UpdateLayout();
+   window.Dispatcher.Invoke(() => {}, System.Windows.Threading.DispatcherPriority.ApplicationIdle);
+   var stacked=window.ActualWidth < 1250;
+   Assert.Equal(stacked ? 2 : 0, Grid.GetRow(list));
+   Assert.Equal(stacked ? 0 : 2, Grid.GetColumn(list));
+   var inputOrigin=editor.TranslatePoint(new Point(),window);
+   var tableOrigin=list.TranslatePoint(new Point(),window);
+   Assert.True(stacked
+     ? tableOrigin.Y >= inputOrigin.Y + editor.ActualHeight
+     : tableOrigin.X > inputOrigin.X + editor.ActualWidth,
+     $"Atlas layout must match actual viewport {window.ActualWidth} at requested width {width}.");
+  }
   Assert.False(window.Session.HasUnsavedWork);
  }
 }
